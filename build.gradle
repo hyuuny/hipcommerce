@@ -1,0 +1,101 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.8'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    group = 'com.hyuuny'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = '11'
+
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
+    compileJava.options.encoding = 'UTF-8'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+        implementation 'org.springframework.boot:spring-boot-starter-validation'
+        compileOnly 'org.projectlombok:lombok'
+        testAnnotationProcessor 'org.projectlombok:lombok'
+        testCompile 'org.projectlombok:lombok'
+        developmentOnly 'org.springframework.boot:spring-boot-devtools'
+        annotationProcessor 'org.projectlombok:lombok'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+        // DB
+        implementation 'mysql:mysql-connector-java'
+        runtimeOnly 'com.h2database:h2'
+
+        compile group: 'com.querydsl', name: 'querydsl-jpa'
+        compile group: 'com.querydsl', name: 'querydsl-apt'
+
+        implementation 'com.google.guava:guava:29.0-jre'
+
+        implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.6.1'
+        implementation 'org.modelmapper:modelmapper:2.3.7'
+
+    }
+
+    def generated = "$buildDir/generated/querydsl"
+    sourceSets {
+        main.java.srcDirs += [generated]
+    }
+
+    tasks.withType(JavaCompile) {
+        options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+    }
+
+    clean.doLast {
+        file(generated).deleteDir()
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+
+project(':common') {
+
+    bootJar { enabled = false }
+    jar { enabled = true }
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+    }
+}
+
+project(':client') {
+    dependencies {
+        compileOnly project(':common')
+        testImplementation project(':common')
+    }
+}
+
+project(':admin') {
+    dependencies {
+        compileOnly project(':common')
+        testImplementation project(':common')
+    }
+}

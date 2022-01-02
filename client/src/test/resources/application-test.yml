@@ -1,0 +1,15 @@
+server:
+  port: 8080
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  output:
+    ansi:
+      enabled: always
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+

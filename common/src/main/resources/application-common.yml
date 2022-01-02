@@ -1,0 +1,21 @@
+spring:
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 10
+          order_inserts: true
+          order_updates: true
+        default_batch_fetch_size: 500
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+    include-exception: true
+#    include-binding-errors: always
+    include-message: always
+#    include-stacktrace: always
+
+
