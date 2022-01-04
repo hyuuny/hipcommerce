@@ -47,7 +47,12 @@ subprojects {
         implementation 'mysql:mysql-connector-java'
         runtimeOnly 'com.h2database:h2'
 
-        compile group: 'com.querydsl', name: 'querydsl-jpa'
+        // Open API
+        implementation 'org.springdoc:springdoc-openapi-ui:1.5.9'
+        implementation 'org.springdoc:springdoc-openapi-hateoas:1.5.9'
+        implementation 'org.springdoc:springdoc-openapi-data-rest:1.5.9'
+
+        implementation 'com.querydsl:querydsl-jpa'
         compile group: 'com.querydsl', name: 'querydsl-apt'
 
         implementation 'com.google.guava:guava:29.0-jre'
@@ -57,24 +62,11 @@ subprojects {
 
     }
 
-    def generated = "$buildDir/generated/querydsl"
-    sourceSets {
-        main.java.srcDirs += [generated]
-    }
-
-    tasks.withType(JavaCompile) {
-        options.annotationProcessorGeneratedSourcesDirectory = file(generated)
-    }
-
-    clean.doLast {
-        file(generated).deleteDir()
-    }
 }
 
 test {
     useJUnitPlatform()
 }
-
 
 project(':common') {
 
@@ -84,6 +76,7 @@ project(':common') {
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-web'
     }
+
 }
 
 project(':client') {

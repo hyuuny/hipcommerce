@@ -72,6 +72,25 @@ public class Product extends BaseEntity {
     option.setProduct(this);
   }
 
+  public void changeName(final String name) {
+    this.name = name;
+  }
+
+  public void changePrice(final Long price) {
+    this.price = Money.wons(price);
+  }
+
+  public void changeStatus(final Status status) {
+    this.status = status;
+  }
+
+  public void changeThumbnail(final String thumbnail) {
+    this.thumbnail = thumbnail;
+  }
+
+  public void addHits() {
+    this.hits += 1;
+  }
 
 
 

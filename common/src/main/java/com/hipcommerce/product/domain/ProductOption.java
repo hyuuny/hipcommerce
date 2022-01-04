@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.EqualsAndHashCode;
 import lombok.EqualsAndHashCode.Include;
 import lombok.Getter;
@@ -33,7 +34,7 @@ public class ProductOption extends BaseNoEqualsEntity {
   @Column(nullable = false)
   private String name;
 
-  @Include
+  @Default
   @Convert(converter = MoneyConverter.class)
   private Money price = Money.ZERO;
 

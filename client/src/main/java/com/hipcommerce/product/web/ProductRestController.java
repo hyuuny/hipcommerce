@@ -1,4 +1,4 @@
-package com.hipcommerce.product;
+package com.hipcommerce.product.web;
 
 import com.hipcommerce.product.dto.ProductDto.Create;
 import com.hipcommerce.product.dto.ProductDto.Response;
@@ -20,17 +20,5 @@ public class ProductRestController {
 
   static final String REQUEST_BASE_PATH = "/api/products";
   private final ProductService productService;
-
-  @PostMapping
-  public ResponseEntity<Long> createProduct(@RequestBody Create dto) {
-    Long product = productService.createProduct(dto);
-    return ResponseEntity.ok(product);
-  }
-
-  @GetMapping("/{id}")
-  public ResponseEntity<Response> getProduct(@PathVariable final Long id) {
-    Response foundProduct = productService.getProduct(id);
-    return ResponseEntity.ok(foundProduct);
-  }
 
 }

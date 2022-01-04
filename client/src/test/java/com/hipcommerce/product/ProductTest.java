@@ -10,6 +10,7 @@ import com.hipcommerce.product.domain.Product.Status;
 import com.hipcommerce.product.domain.ProductRepository;
 import com.hipcommerce.product.dto.ProductDto.Create;
 import com.hipcommerce.product.service.ProductService;
+import com.hipcommerce.product.web.ProductRestController;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
