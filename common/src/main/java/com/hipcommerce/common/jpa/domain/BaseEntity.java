@@ -34,9 +34,9 @@ public abstract class BaseEntity implements Serializable {
 
   @CreatedDate
   @Column(updatable = false)
-  private LocalDateTime createdTime;
+  private LocalDateTime createdDate;
 
   @LastModifiedDate
-  private LocalDateTime lastModifiedTime;
+  private LocalDateTime lastModifiedDate;
 
 }

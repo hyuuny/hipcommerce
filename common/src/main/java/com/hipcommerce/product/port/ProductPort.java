@@ -18,14 +18,14 @@ public class ProductPort {
   private final ApplicationEventPublisher eventPublisher;
 
 
-  public Long save(Create dto) {
-    Product savedProduct = dto.toEntity();
-    return productRepository.save(savedProduct).getId();
+  public Product save(Create dto) {
+    Product newProduct = dto.toEntity();
+    return productRepository.save(newProduct);
   }
 
   public Product getProduct(Long id) {
     return productRepository.findById(id).orElseThrow(
-        () -> new HttpStatusMessageException(HttpStatus.BAD_REQUEST, "product.notFound", id)
+        () -> new HttpStatusMessageException(HttpStatus.BAD_REQUEST, "product.id.notFound", id)
     );
   }
 

@@ -5,11 +5,9 @@ import com.hipcommerce.product.dto.ProductDto.Create;
 import com.hipcommerce.product.dto.ProductDto.Response;
 import com.hipcommerce.product.port.ProductPort;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
@@ -20,13 +18,13 @@ public class ProductService {
 
   @Transactional
   public Response createProductAndGet(Create dto) {
-    Long savedProduct = createProduct(dto);
-    return getProduct(savedProduct, false);
+    Long savedProductId = createProduct(dto);
+    return getProduct(savedProductId, false);
   }
 
   @Transactional
   public Long createProduct(Create dto) {
-    return productPort.save(dto);
+    return productPort.save(dto).getId();
   }
 
   @Transactional

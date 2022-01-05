@@ -32,7 +32,7 @@ public abstract class BaseNoEqualsEntity implements Serializable {
 
   @CreatedDate
   @Column(updatable = false)
-  private LocalDateTime createdTime;
+  private LocalDateTime createdDate;
 
   @LastModifiedDate
   private LocalDateTime lastModifiedDate;

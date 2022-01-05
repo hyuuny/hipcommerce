@@ -17,7 +17,6 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.springframework.hateoas.server.core.Relation;
 
 public class ProductDto {
@@ -41,7 +40,7 @@ public class ProductDto {
     @Schema(description = "상품상태", example = "ON_SALE", required = true)
     private Status status;
 
-    @Schema(description = "제품명", example = "https://hipcommerce-bucket.s3.ap-northeast-2.amazonaws.com/data/image_1596187406745_1000.jpg", required = false)
+    @Schema(description = "상품 썸네일 url", example = "https://hipcommerce-bucket.s3.ap-northeast-2.amazonaws.com/data/image_1596187406745_1000.jpg", required = false)
     private String thumbnail;
 
     @Default
@@ -83,7 +82,7 @@ public class ProductDto {
     @Schema(description = "상품상태", example = "ON_SALE", required = true)
     private Status status;
 
-    @Schema(description = "제품명", example = "https://hipcommerce-bucket.s3.ap-northeast-2.amazonaws.com/data/image_1596187406745_1000.jpg", required = false)
+    @Schema(description = "상품 썸네일 url", example = "https://hipcommerce-bucket.s3.ap-northeast-2.amazonaws.com/data/image_1596187406745_1000.jpg", required = false)
     private String thumbnail;
 
     @Default
@@ -103,7 +102,6 @@ public class ProductDto {
     }
   }
 
-  @Setter
   @Getter
   @NoArgsConstructor
   @AllArgsConstructor
@@ -124,7 +122,7 @@ public class ProductDto {
     @Schema(description = "상품상태", example = "ON_SALE", required = true)
     private Status status;
 
-    @Schema(description = "제품명", example = "https://hipcommerce-bucket.s3.ap-northeast-2.amazonaws.com/data/image_1596187406745_1000.jpg", required = false)
+    @Schema(description = "상품 썸네일 url", example = "https://hipcommerce-bucket.s3.ap-northeast-2.amazonaws.com/data/image_1596187406745_1000.jpg", required = false)
     private String thumbnail;
 
     @Schema(description = "상품옵션 리스트", required = false)
@@ -145,8 +143,8 @@ public class ProductDto {
       this.options = entity.getOptions().stream()
           .map(ProductOptionDto.Response::new)
           .collect(Collectors.toList());
-      this.createdDate = entity.getCreatedTime();
-      this.lastModifiedDate = entity.getLastModifiedTime();
+      this.createdDate = entity.getCreatedDate();
+      this.lastModifiedDate = entity.getLastModifiedDate();
     }
   }
 

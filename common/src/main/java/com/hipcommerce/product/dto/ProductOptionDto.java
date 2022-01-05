@@ -84,7 +84,7 @@ public class ProductOptionDto {
       this.price = entity.getPrice().longValue();
       this.stockQuantity = entity.getStockQuantity();
       this.imageUrl = entity.getImageUrl();
-      this.createdDate = entity.getCreatedTime();
+      this.createdDate = entity.getCreatedDate();
       this.lastModifiedDate = entity.getLastModifiedDate();
     }
 
