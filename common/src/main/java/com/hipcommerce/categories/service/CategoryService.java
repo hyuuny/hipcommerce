@@ -45,7 +45,7 @@ public class CategoryService {
     return new Response(foundCategory);
   }
 
-  public List<Response> getParentCategories() {
+  public List<Response> getAllCategories() {
     List<Category> categories = categoryPort.getCategories();
     return categoryPort.toResponses(categories);
   }
