@@ -5,6 +5,7 @@ import com.hipcommerce.categories.domain.CategoryRepository;
 import com.hipcommerce.categories.dto.CategoryDto.Create;
 import com.hipcommerce.categories.dto.CategoryDto.DetailedSearchCondition;
 import com.hipcommerce.categories.dto.CategoryDto.Response;
+import com.hipcommerce.categories.dto.CategoryDto.Update;
 import com.hipcommerce.common.web.model.HttpStatusMessageException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +31,12 @@ public class CategoryPort {
 
   public Category save(Category category) {
     return categoryRepository.save(category);
+  }
+
+  public Category getCategory(final Long id) {
+    return categoryRepository.findById(id).orElseThrow(
+        () -> new HttpStatusMessageException(HttpStatus.BAD_REQUEST, "category.id.notFound", id)
+    );
   }
 
   public List<Category> getCategories() {
@@ -61,10 +68,10 @@ public class CategoryPort {
         .collect(Collectors.toList());
   }
 
-  public Category getCategory(final Long id) {
-    return categoryRepository.findById(id).orElseThrow(
-        () -> new HttpStatusMessageException(HttpStatus.BAD_REQUEST, "category.id.notFound", id)
-    );
+  public Category updateCategory(final Long id, Update dto) {
+    Category foundCategory = getCategory(id);
+    dto.update(foundCategory);
+    return foundCategory;
   }
 
   public void delete(final Long id) {

@@ -65,9 +65,8 @@ public class CategoryService {
 
   @Transactional
   public Response updateCategory(final Long id, Update dto) {
-    Category foundCategory = categoryPort.getCategory(id);
-    dto.update(foundCategory);
-    return getCategory(foundCategory.getId());
+    Category updatedCategory = categoryPort.updateCategory(id, dto);
+    return new Response(updatedCategory);
   }
 
   @Transactional
