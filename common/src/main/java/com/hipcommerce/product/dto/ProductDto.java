@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.hateoas.server.core.Relation;
 
 public class ProductDto {
@@ -29,12 +30,27 @@ public class ProductDto {
   public static class Create {
 
     @NotNull
+    @Schema(description = "카테고리 ID", example = "1", required = true)
+    private Long categoryId;
+
+    @NotNull
     @Schema(description = "상품명", example = "카고바지", required = true)
     private String name;
 
     @NotNull
+    @Schema(description = "브랜드", example = "플랙진", required = true)
+    private String brand;
+
+    @NotNull
     @Schema(description = "상품가격", example = "36000", required = true)
     private Long price;
+
+    @Schema(description = "우선순위", example = "1", required = false)
+    private int priorityNumber;
+
+    @NotNull
+    @Schema(description = "태그", example = "#힙한|#봄가을용|#인기템", required = true)
+    private String tag;
 
     @NotNull
     @Schema(description = "상품상태", example = "ON_SALE", required = true)
@@ -49,8 +65,12 @@ public class ProductDto {
 
     public Product toEntity() {
       Product product = Product.builder()
+          .categoryId(this.categoryId)
           .name(this.name)
+          .brand(this.brand)
           .price(Money.wons(this.price))
+          .priorityNumber(this.priorityNumber)
+          .tag(this.tag)
           .status(this.status)
           .thumbnail(this.thumbnail)
           .build();
@@ -71,12 +91,27 @@ public class ProductDto {
   public static class Update {
 
     @NotNull
+    @Schema(description = "카테고리 ID", example = "1", required = true)
+    private Long categoryId;
+
+    @NotNull
     @Schema(description = "상품명", example = "카고바지", required = true)
     private String name;
 
     @NotNull
+    @Schema(description = "브랜드", example = "플랙진", required = true)
+    private String brand;
+
+    @NotNull
     @Schema(description = "상품가격", example = "36000", required = true)
     private Long price;
+
+    @Schema(description = "우선순위", example = "1", required = false)
+    private int priorityNumber;
+
+    @NotNull
+    @Schema(description = "태그", example = "#힙한|#봄가을용|#인기템", required = true)
+    private String tag;
 
     @NotNull
     @Schema(description = "상품상태", example = "ON_SALE", required = true)
@@ -90,8 +125,12 @@ public class ProductDto {
     private List<ProductOptionDto.Create> options = Lists.newArrayList();
 
     public void update(Product entity) {
+      entity.changeCategoryId(this.categoryId);
       entity.changeName(this.name);
+      entity.changeBrand(this.brand);
       entity.changePrice(this.price);
+      entity.changePriorityNumber(this.priorityNumber);
+      entity.changeTag(this.tag);
       entity.changeStatus(this.status);
       entity.changeThumbnail(this.thumbnail);
 
@@ -113,11 +152,23 @@ public class ProductDto {
     @Schema(description = "아이디", example = "1", required = true)
     private Long id;
 
+    @Schema(description = "카테고리 ID", example = "1", required = true)
+    private Long categoryId;
+
     @Schema(description = "상품명", example = "카고바지", required = true)
     private String name;
 
-    @Schema(description = "상품가격", example = "40000", required = true)
+    @Schema(description = "브랜드", example = "플랙진", required = true)
+    private String brand;
+
+    @Schema(description = "상품가격", example = "36000", required = true)
     private Long price;
+
+    @Schema(description = "우선순위", example = "36000", required = false)
+    private int priorityNumber;
+
+    @Schema(description = "태그", example = "#힙한|#봄가을용|#인기템", required = true)
+    private String tag;
 
     @Schema(description = "상품상태", example = "ON_SALE", required = true)
     private Status status;
@@ -136,8 +187,12 @@ public class ProductDto {
 
     public Response(Product entity) {
       this.id = entity.getId();
+      this.categoryId = entity.getCategoryId();
       this.name = entity.getName();
-      this.price = entity.getPrice().longValue();
+      this.brand = entity.getBrand();
+      this.price = entity.toPrice();
+      this.priorityNumber = entity.getPriorityNumber();
+      this.tag = entity.getTag();
       this.status = entity.getStatus();
       this.thumbnail = entity.getThumbnail();
       this.options = entity.getOptions().stream()
@@ -147,5 +202,47 @@ public class ProductDto {
       this.lastModifiedDate = entity.getLastModifiedDate();
     }
   }
+
+  @Setter
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Builder
+  @Schema(name = "ProductDto.DetailedSearchCondition", description = "상품 상세검색조건")
+  public static class DetailedSearchCondition {
+
+    @Schema(description = "검색옵션", example = "productName", required = false)
+    private String searchOption;
+
+    @Schema(description = "검색어", example = "카고바지", required = false)
+    private String keyword;
+
+    @Schema(description = "카테고리 ID", example = "1", required = false)
+    private List<Long> categoryIds;
+
+    @Schema(description = "상태", example = "ON_SALE", required = false)
+    private Status status;
+
+  }
+
+  @Setter
+  @Getter
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @Builder
+  @Schema(name = "ProductDto.SearchCondition", description = "상품 검색조건")
+  public static class SearchCondition {
+
+    @Schema(description = "검색옵션", example = "productName", required = false)
+    private String searchOption;
+
+    @Schema(description = "검색어", example = "카고바지", required = false)
+    private String keyword;
+
+    @Schema(description = "카테고리 ID", example = "1", required = false)
+    private List<Long> categoryIds;
+
+  }
+
 
 }

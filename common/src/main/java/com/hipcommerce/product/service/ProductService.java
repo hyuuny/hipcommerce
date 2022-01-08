@@ -2,9 +2,14 @@ package com.hipcommerce.product.service;
 
 import com.hipcommerce.product.domain.Product;
 import com.hipcommerce.product.dto.ProductDto.Create;
+import com.hipcommerce.product.dto.ProductDto.DetailedSearchCondition;
 import com.hipcommerce.product.dto.ProductDto.Response;
+import com.hipcommerce.product.dto.ProductDto.SearchCondition;
+import com.hipcommerce.product.dto.ProductDto.Update;
 import com.hipcommerce.product.port.ProductPort;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,5 +38,28 @@ public class ProductService {
     return new Response(foundProduct);
   }
 
+  public Page<Response> retrieveProduct(
+      DetailedSearchCondition searchCondition,
+      Pageable pageable
+  ) {
+    Page<Response> products = productPort.retrieveProduct(searchCondition, pageable);
+    return products;
+  }
+
+  public Page<Response> retrieveProduct(SearchCondition searchCondition, Pageable pageable) {
+    Page<Response> products = productPort.retrieveProduct(searchCondition, pageable);
+    return products;
+  }
+
+  @Transactional
+  public Response updateProduct(final Long id, Update dto) {
+    Product updatedProduct = productPort.updateProduct(id, dto);
+    return new Response(updatedProduct);
+  }
+
+  @Transactional
+  public void deleteProduct(final Long id) {
+    productPort.deleteProduct(id);
+  }
 
 }

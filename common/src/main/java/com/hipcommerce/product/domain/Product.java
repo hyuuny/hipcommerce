@@ -3,6 +3,7 @@ package com.hipcommerce.product.domain;
 import static com.hipcommerce.product.domain.Product.Status.ON_SALE;
 import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.LAZY;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 import com.google.common.collect.Lists;
 import com.hipcommerce.common.generators.UniqueIdGenerator;
@@ -44,6 +45,9 @@ public class Product extends BaseEntity {
     private final String title;
   }
 
+  @Column(nullable = false)
+  private Long categoryId;
+
   @Default
   @Column(nullable = false, unique = true, updatable = false)
   private String code = UniqueIdGenerator.nextProductCode();
@@ -51,9 +55,16 @@ public class Product extends BaseEntity {
   @Column(nullable = false)
   private String name;
 
+  @Column(nullable = false)
+  private String brand;
+
   @Default
   @Convert(converter = MoneyConverter.class)
   private Money price = Money.ZERO;
+
+  private int priorityNumber;
+
+  private String tag;
 
   @Default
   @Column(nullable = false)
@@ -72,12 +83,30 @@ public class Product extends BaseEntity {
     option.setProduct(this);
   }
 
+  public void changeCategoryId(final Long categoryId) {
+    if (!isEmpty(categoryId)) {
+      this.categoryId = categoryId;
+    }
+  }
+
   public void changeName(final String name) {
     this.name = name;
   }
 
+  public void changeBrand(final String brand) {
+    this.brand = brand;
+  }
+
   public void changePrice(final Long price) {
     this.price = Money.wons(price);
+  }
+
+  public void changePriorityNumber(final int priorityNumber) {
+    this.priorityNumber = priorityNumber;
+  }
+
+  public void changeTag(final String tag) {
+    this.tag = tag;
   }
 
   public void changeStatus(final Status status) {
@@ -88,11 +117,18 @@ public class Product extends BaseEntity {
     this.thumbnail = thumbnail;
   }
 
+  public Long toPrice() {
+    return this.price.longValue();
+  }
+
+
   public void addHits() {
     this.hits += 1;
   }
 
-
+  public void delete() {
+    this.status = Status.DELETED;
+  }
 
 
 }

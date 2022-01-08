@@ -57,9 +57,9 @@ public class CategoryPort {
       DetailedSearchCondition searchCondition,
       Pageable pageable
   ) {
-    Page<Category> foundCategories = categoryRepository.retrieveCategory(searchCondition, pageable);
-    List<Response> categories = toResponses(foundCategories);
-    return new PageImpl(categories, pageable, foundCategories.getTotalElements());
+    Page<Category> pages = categoryRepository.retrieveCategory(searchCondition, pageable);
+    List<Response> categories = toResponses(pages);
+    return new PageImpl(categories, pageable, pages.getTotalElements());
   }
 
   private List<Response> toResponses(Page<Category> pages) {

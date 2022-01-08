@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,8 +29,9 @@ public class ProductOptionDto {
     @Schema(description = "옵션명", example = "카고바지(블랙)", required = true)
     private String name;
 
-    @Schema(description = "추가금액", example = "2000", required = false)
-    private Long price;
+    @Default
+    @Schema(description = "추가금액", example = "2000", required = true)
+    private Long price = Money.ZERO.longValue();
 
     @Schema(description = "재고수량", example = "13", required = false)
     private int stockQuantity;

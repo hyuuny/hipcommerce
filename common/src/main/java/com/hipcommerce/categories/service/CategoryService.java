@@ -60,7 +60,8 @@ public class CategoryService {
       DetailedSearchCondition searchCondition,
       Pageable pageable
   ) {
-    return categoryPort.retrieveCategory(searchCondition, pageable);
+    Page<Response> categories = categoryPort.retrieveCategory(searchCondition, pageable);
+    return categories;
   }
 
   @Transactional
