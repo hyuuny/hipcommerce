@@ -54,7 +54,7 @@ class CategoryAdminRestControllerTest extends BaseIntegrationTest {
               .build());
     });
 
-    mockMvc.perform(get(CategoryAdminRestController.REQUEST_URL + "/search")
+    mockMvc.perform(get(CategoryAdminRestController.REQUEST_URL)
 //            .param("searchOption", "categoryName")
 //            .param("keyword", "3번째 카테고리")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -182,7 +182,7 @@ class CategoryAdminRestControllerTest extends BaseIntegrationTest {
           .build());
     });
 
-    this.mockMvc.perform(get(CategoryAdminRestController.REQUEST_URL)
+    this.mockMvc.perform(get(CategoryAdminRestController.REQUEST_URL + "/all")
         .content(MediaType.APPLICATION_JSON_VALUE)
         .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())

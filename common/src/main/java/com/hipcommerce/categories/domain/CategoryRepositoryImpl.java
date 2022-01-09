@@ -36,7 +36,7 @@ public class CategoryRepositoryImpl extends Querydsl4RepositorySupport implement
     }
 
     if (Objects.equals(searchOption, "categoryName")) {
-      return category.name.like("%" + keyword + "%");
+      return category.name.contains(keyword);
     }
 
     return null;

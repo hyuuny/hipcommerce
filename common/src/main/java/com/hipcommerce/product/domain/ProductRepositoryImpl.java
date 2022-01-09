@@ -9,7 +9,6 @@ import com.hipcommerce.product.domain.Product.Status;
 import com.hipcommerce.product.dto.ProductDto.DetailedSearchCondition;
 import com.hipcommerce.product.dto.ProductDto.SearchCondition;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import java.util.List;
 import java.util.Objects;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +27,7 @@ public class ProductRepositoryImpl extends Querydsl4RepositorySupport implements
         .join(category).on(category.id.eq(product.categoryId))
         .where(
             statusEq(searchCondition.getStatus()),
-            categoryIdsIn(searchCondition.getCategoryIds()),
+            categoryIdEq(searchCondition.getCategoryId()),
             keywordSearch(searchCondition.getSearchOption(), searchCondition.getKeyword())
         ));
   }
@@ -39,13 +38,13 @@ public class ProductRepositoryImpl extends Querydsl4RepositorySupport implements
         .selectFrom(product)
         .join(category).on(category.id.eq(product.categoryId))
         .where(
-            categoryIdsIn(searchCondition.getCategoryIds()),
+            categoryIdEq(searchCondition.getCategoryId()),
             keywordSearch(searchCondition.getSearchOption(), searchCondition.getKeyword())
         ));
   }
 
-  private BooleanExpression categoryIdsIn(List<Long> categoryIds) {
-    return isEmpty(categoryIds) ? null : product.categoryId.in(categoryIds);
+  private BooleanExpression categoryIdEq(final Long categoryId) {
+    return isEmpty(categoryId) ? null : product.categoryId.eq(categoryId);
   }
 
   private BooleanExpression statusEq(final Status status) {

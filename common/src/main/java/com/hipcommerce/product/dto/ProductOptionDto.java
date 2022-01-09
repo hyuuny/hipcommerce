@@ -30,7 +30,7 @@ public class ProductOptionDto {
     private String name;
 
     @Default
-    @Schema(description = "추가금액", example = "2000", required = true)
+    @Schema(description = "추가금액", example = "2000", required = false)
     private Long price = Money.ZERO.longValue();
 
     @Schema(description = "재고수량", example = "13", required = false)

@@ -45,6 +45,10 @@ public class ProductDto {
     @Schema(description = "상품가격", example = "36000", required = true)
     private Long price;
 
+    @Default
+    @Schema(description = "할인가격", example = "5000", required = false)
+    private Long discountPrice = Money.ZERO.longValue();
+
     @Schema(description = "우선순위", example = "1", required = false)
     private int priorityNumber;
 
@@ -69,6 +73,7 @@ public class ProductDto {
           .name(this.name)
           .brand(this.brand)
           .price(Money.wons(this.price))
+          .discountPrice(Money.wons(this.discountPrice))
           .priorityNumber(this.priorityNumber)
           .tag(this.tag)
           .status(this.status)
@@ -106,6 +111,10 @@ public class ProductDto {
     @Schema(description = "상품가격", example = "36000", required = true)
     private Long price;
 
+    @Default
+    @Schema(description = "할인가격", example = "5000", required = false)
+    private Long discountPrice = Money.ZERO.longValue();
+
     @Schema(description = "우선순위", example = "1", required = false)
     private int priorityNumber;
 
@@ -129,6 +138,7 @@ public class ProductDto {
       entity.changeName(this.name);
       entity.changeBrand(this.brand);
       entity.changePrice(this.price);
+      entity.changeDiscountPrice(this.discountPrice);
       entity.changePriorityNumber(this.priorityNumber);
       entity.changeTag(this.tag);
       entity.changeStatus(this.status);
@@ -164,6 +174,12 @@ public class ProductDto {
     @Schema(description = "상품가격", example = "36000", required = true)
     private Long price;
 
+    @Schema(description = "할인가격", example = "5000", required = false)
+    private Long discountPrice;
+
+    @Schema(description = "할인 적용된 가갹(삼품가격-할인가격)", example = "31000", required = true)
+    private Long calculatedPrice;
+
     @Schema(description = "우선순위", example = "36000", required = false)
     private int priorityNumber;
 
@@ -191,6 +207,8 @@ public class ProductDto {
       this.name = entity.getName();
       this.brand = entity.getBrand();
       this.price = entity.toPrice();
+      this.discountPrice = entity.toDiscountPrice();
+      this.calculatedPrice = entity.getCalculatedPrice();
       this.priorityNumber = entity.getPriorityNumber();
       this.tag = entity.getTag();
       this.status = entity.getStatus();
@@ -205,8 +223,8 @@ public class ProductDto {
 
   @Setter
   @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
+  @AllArgsConstructor(access = AccessLevel.PRIVATE)
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @Builder
   @Schema(name = "ProductDto.DetailedSearchCondition", description = "상품 상세검색조건")
   public static class DetailedSearchCondition {
@@ -218,7 +236,7 @@ public class ProductDto {
     private String keyword;
 
     @Schema(description = "카테고리 ID", example = "1", required = false)
-    private List<Long> categoryIds;
+    private Long categoryId;
 
     @Schema(description = "상태", example = "ON_SALE", required = false)
     private Status status;
@@ -227,8 +245,8 @@ public class ProductDto {
 
   @Setter
   @Getter
-  @NoArgsConstructor
-  @AllArgsConstructor
+  @AllArgsConstructor(access = AccessLevel.PRIVATE)
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
   @Builder
   @Schema(name = "ProductDto.SearchCondition", description = "상품 검색조건")
   public static class SearchCondition {
@@ -240,7 +258,7 @@ public class ProductDto {
     private String keyword;
 
     @Schema(description = "카테고리 ID", example = "1", required = false)
-    private List<Long> categoryIds;
+    private Long categoryId;
 
   }
 

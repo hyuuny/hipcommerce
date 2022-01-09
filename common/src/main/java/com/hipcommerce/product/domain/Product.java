@@ -62,6 +62,10 @@ public class Product extends BaseEntity {
   @Convert(converter = MoneyConverter.class)
   private Money price = Money.ZERO;
 
+  @Default
+  @Convert(converter = MoneyConverter.class)
+  private Money discountPrice = Money.ZERO;
+
   private int priorityNumber;
 
   private String tag;
@@ -101,6 +105,10 @@ public class Product extends BaseEntity {
     this.price = Money.wons(price);
   }
 
+  public void changeDiscountPrice(final Long discountPrice) {
+    this.discountPrice = Money.wons(discountPrice);
+  }
+
   public void changePriorityNumber(final int priorityNumber) {
     this.priorityNumber = priorityNumber;
   }
@@ -121,6 +129,17 @@ public class Product extends BaseEntity {
     return this.price.longValue();
   }
 
+  public Long getCalculatedPrice() {
+    return calculatePrice().longValue();
+  }
+
+  public Long toDiscountPrice() {
+    return this.discountPrice.longValue();
+  }
+
+  public Money calculatePrice() {
+    return this.price.minus(this.discountPrice);
+  }
 
   public void addHits() {
     this.hits += 1;

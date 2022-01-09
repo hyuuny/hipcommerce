@@ -51,7 +51,7 @@ public class CategoryAdminRestController {
 
   @Operation(summary = "카테고리 조회 및 검색", description = "searchOption: \n"
       + "카드이름: cardName")
-  @GetMapping("/search")
+  @GetMapping
   public ResponseEntity<PagedModel<EntityModel<Response>>> retrieveCategory(
       @ParameterObject @Valid DetailedSearchCondition searchCondition,
       @ParameterObject @PageableDefault(sort = "createdDate", direction = DESC) Pageable pageable,
@@ -63,7 +63,7 @@ public class CategoryAdminRestController {
   }
 
   @Operation(summary = "카테고리 리스트 조회")
-  @GetMapping
+  @GetMapping("/all")
   public ResponseEntity<List<Response>> getCategories() {
     List<Response> categories = categoryService.getAllCategories();
     return ResponseEntity.ok(categories);
