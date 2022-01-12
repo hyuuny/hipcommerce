@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js" ></script>
+<script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.1.8.js"></script>
+<head>
+  <title>결제페이지</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body>
+<h1>힙커머스입니다! 결제 페이지</h1>
+<button onclick="requestPay()">결제하기</button>
+</body>
+</html>
+
+<script>
+  function requestPay() {
+    IMP.init("imp32870043");
+    // IMP.request_pay(param, callback) 결제창 호출
+    IMP.request_pay({ // param
+      pg : 'html5_inicis',
+      pay_method: "card",
+      merchant_uid: "ORD20180131-0000048",
+      name: "노르웨이 회전 의자",
+      amount: 64900,
+      buyer_email: "gildong@gmail.com",
+      buyer_name: "홍길동",
+      buyer_tel: "010-4242-4242",
+      buyer_addr: "서울특별시 강남구 신사동",
+      buyer_postcode: "01181",
+    }, function (rsp) { // callback
+      console.log("rsp", rsp);
+      if ( rsp.success ) {
+        jQuery.ajax({
+          url : "/api/v1/payments/request",
+          type: 'POST',
+          headers: { "Content-Type": "application/json; charset=UTF-8" },
+          dataType: 'JSON',
+          data: JSON.stringify ({
+            imp_uid : rsp.imp_uid,
+            merchant_uid : rsp.merchant_uid
+          })
+        });
+          //[2] 서버에서 REST API로 결제정보확인 및 서비스루틴이 정상적인 경우
+            var msg = '결제가 완료되었습니다.';
+            msg += '\n고유ID : ' + rsp.imp_uid;
+            msg += '\n상점 거래ID : ' + rsp.merchant_uid;
+            msg += '\n결제 금액 : ' + rsp.paid_amount;
+            msg += '카드 승인번호 : ' + rsp.apply_num;
+      } else {
+        var msg = '결제에 실패하였습니다.';
+        msg += '에러내용 : ' + rsp.error_msg;
+      }
+      alert(msg);
+    });
+  }
+</script>

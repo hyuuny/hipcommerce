@@ -177,7 +177,7 @@ public class ProductDto {
     @Schema(description = "할인가격", example = "5000", required = false)
     private Long discountPrice;
 
-    @Schema(description = "할인 적용된 가갹(삼품가격-할인가격)", example = "31000", required = true)
+    @Schema(description = "할인 적용된 가격(삼품가격-할인가격)", example = "31000", required = true)
     private Long calculatedPrice;
 
     @Schema(description = "우선순위", example = "36000", required = false)

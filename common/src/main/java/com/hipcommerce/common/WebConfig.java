@@ -1,6 +1,9 @@
 package com.hipcommerce.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hipcommerce.common.web.interceptors.LogInterceptor;
+import com.hipcommerce.common.web.pebble.PebbleViewExtension;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.MessageSourceAccessor;
@@ -11,8 +14,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
+@RequiredArgsConstructor
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+  private final ObjectMapper objectMapper;
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
@@ -61,6 +67,11 @@ public class WebConfig implements WebMvcConfigurer {
   @Bean
   public MessageSourceAccessor messageSourceAccessor() {
     return new MessageSourceAccessor(messageSource());
+  }
+
+  @Bean
+  public PebbleViewExtension pebbleViewExtension() {
+    return new PebbleViewExtension(messageSourceAccessor(), objectMapper);
   }
 
 }
