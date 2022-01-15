@@ -17,6 +17,14 @@ public class UniqueIdGenerator {
     return nextId("P");
   }
 
+  public static String nextOrderCode() {
+    return nextId("O");
+  }
+
+  public static String nextOrderItemCode() {
+    return nextId("OI");
+  }
+
   private static String nextId(final String prefix) {
     long prev;
     long next = Long.parseLong(now().format(ofPattern("yyyyMMddHHmmssSSS")));
@@ -24,7 +32,7 @@ public class UniqueIdGenerator {
       prev = LAST_TIME.get();
       next = next > prev ? next : prev + 1;
     } while (!LAST_TIME.compareAndSet(prev, next));
-    return isEmpty(null) ? Long.toString(next) : prefix + next;
+    return prefix + next;
   }
 
 }

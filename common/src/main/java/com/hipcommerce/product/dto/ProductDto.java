@@ -165,6 +165,9 @@ public class ProductDto {
     @Schema(description = "카테고리 ID", example = "1", required = true)
     private Long categoryId;
 
+    @Schema(description = "상품 코드", example = "P20220109140753969", required = true)
+    private String code;
+
     @Schema(description = "상품명", example = "카고바지", required = true)
     private String name;
 

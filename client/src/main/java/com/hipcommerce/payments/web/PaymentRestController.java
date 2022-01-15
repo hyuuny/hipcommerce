@@ -1,9 +1,19 @@
 package com.hipcommerce.payments.web;
 
-import com.hipcommerce.payments.dto.PaymentDto;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+import com.hipcommerce.payments.dto.PaymentDto.PayResult;
+import com.hipcommerce.payments.dto.PaymentDto.Response;
+import com.hipcommerce.payments.service.PaymentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,12 +26,35 @@ public class PaymentRestController {
 
   static final String REQUEST_URL = "/api/v1/payments";
 
-  @PostMapping("/request")
-  public ResponseEntity<?> requestPayments(@RequestBody PaymentDto.RequestBody requestBody) {
+  private final PaymentService paymentService;
+  private final PaymentResourceAssembler paymentResourceAssembler;
 
-//    System.out.println(requestParam.getImpUid());
-//    System.out.println(requestParam.getMerchantUid());
-    return ResponseEntity.ok().build();
+  @PostMapping("/request")
+  public ResponseEntity<?> requestPayments(@RequestBody PayResult payResult) {
+    Response foundPayment = paymentService.payAndGet(payResult);
+    return ResponseEntity.ok(paymentResourceAssembler.toModel(foundPayment));
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<EntityModel<Response>> getPayment(@PathVariable final Long id) {
+    Response foundPayment = paymentService.getPayment(id);
+    return ResponseEntity.ok(paymentResourceAssembler.toModel(foundPayment));
+  }
+
+
+  @Component
+  static class PaymentResourceAssembler implements
+      RepresentationModelAssembler<Response, EntityModel<Response>> {
+
+    @Override
+    public EntityModel<Response> toModel(Response entity) {
+      return EntityModel.of(
+          entity,
+          linkTo(methodOn(PaymentRestController.class)
+              .getPayment(entity.getId()))
+              .withSelfRel()
+      );
+    }
   }
 
 }

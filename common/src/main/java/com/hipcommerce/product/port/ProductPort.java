@@ -80,4 +80,8 @@ public class ProductPort {
     return new PageImpl<>(products, pageable, pages.getTotalElements());
   }
 
+  public List<Product> getProducts(List<Long> productIds) {
+    return productRepository.findAllById(productIds);
+  }
+
 }

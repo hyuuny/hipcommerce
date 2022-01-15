@@ -19,7 +19,7 @@
     IMP.request_pay({ // param
       pg : 'html5_inicis',
       pay_method: "card",
-      merchant_uid: "ORD20180131-0000048",
+      merchant_uid: "ORD20180131-0000051",
       name: "노르웨이 회전 의자",
       amount: 64900,
       buyer_email: "gildong@gmail.com",
@@ -37,7 +37,11 @@
           dataType: 'JSON',
           data: JSON.stringify ({
             imp_uid : rsp.imp_uid,
-            merchant_uid : rsp.merchant_uid
+            merchant_uid : rsp.merchant_uid,
+            pay_method: rsp.pay_method,
+            paid_amount: rsp.paid_amount,
+            status : rsp.status,
+            success: rsp.success
           })
         });
           //[2] 서버에서 REST API로 결제정보확인 및 서비스루틴이 정상적인 경우
