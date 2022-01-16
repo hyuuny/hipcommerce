@@ -66,7 +66,7 @@ public class Order extends BaseEntity {
   @Embedded
   private Orderer orderer;
 
-  private String orderSheetId;
+  private Long orderSheetId;
 
   @Convert(converter = MoneyConverter.class)
   private Money totalPrice;
@@ -92,6 +92,10 @@ public class Order extends BaseEntity {
 
   public Money calculateTotalPrice() {
     return Money.sum(this.orderItems, OrderItem::calculateTotalPrice);
+  }
+
+  public void changePayMethod(PayMethod payMethod) {
+    this.payMethod = payMethod;
   }
 
 

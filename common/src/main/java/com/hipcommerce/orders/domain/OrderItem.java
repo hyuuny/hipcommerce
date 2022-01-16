@@ -60,6 +60,9 @@ public class OrderItem extends BaseNoEqualsEntity {
   @Column(unique = true, nullable = false, updatable = false)
   private String code = UniqueIdGenerator.nextOrderItemCode();
 
+  @Column(nullable = false)
+  public Long productId;
+
   @Include
   @Column(nullable = false)
   public String productCode;
@@ -69,7 +72,12 @@ public class OrderItem extends BaseNoEqualsEntity {
   private String name;
 
   @Column(nullable = false)
-  private String imageUrl;
+  private String brand;
+
+  @Column(nullable = false)
+  private String thumbnail;
+
+  private String optionName;
 
   @Default
   @Include

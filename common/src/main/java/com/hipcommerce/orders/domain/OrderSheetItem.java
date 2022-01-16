@@ -36,6 +36,9 @@ public class OrderSheetItem {
   @Include
   private Long id;
 
+  @Column(nullable = false)
+  public Long productId;
+
   @Include
   @Column(nullable = false)
   public String productCode;
@@ -82,6 +85,21 @@ public class OrderSheetItem {
 
   public Money calculateDiscountPrice() {
     return this.discountPrice.times(quantity);
+  }
+
+  public OrderItem toOrderItem() {
+    return OrderItem.builder()
+        .productId(this.productId)
+        .productCode(this.productCode)
+        .thumbnail(this.thumbnail)
+        .name(this.name)
+        .brand(this.brand)
+        .optionName(this.optionName)
+        .price(this.price)
+        .optionPrice(this.optionPrice)
+        .discountPrice(this.discountPrice)
+        .quantity(this.quantity)
+        .build();
   }
 
 }
