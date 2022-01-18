@@ -21,7 +21,7 @@ public class OrderPlaceDto {
   @Schema(description = "유저 ID", example = "1", required = true)
   private Long userId;
 
-  @NotEmpty
+  @NotNull
   @Schema(description = "주문서 ID", required = true)
   private Long orderSheetId;
 

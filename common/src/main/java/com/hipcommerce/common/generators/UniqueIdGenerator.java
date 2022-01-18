@@ -25,6 +25,10 @@ public class UniqueIdGenerator {
     return nextId("OI");
   }
 
+  public static String nextOrderSheetCode() {
+    return nextId("OS");
+  }
+
   private static String nextId(final String prefix) {
     long prev;
     long next = Long.parseLong(now().format(ofPattern("yyyyMMddHHmmssSSS")));

@@ -49,6 +49,7 @@ public class OrderSheetMapper {
           Product existingProduct = productMap.get(checkoutItem.getProductId());
 
           return OrderSheetItem.builder()
+              .productId(existingProduct.getId())
               .productCode(existingProduct.getCode())
               .name(existingProduct.getName())
               .brand(existingProduct.getBrand())

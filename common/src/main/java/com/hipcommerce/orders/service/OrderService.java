@@ -1,7 +1,6 @@
 package com.hipcommerce.orders.service;
 
 import com.hipcommerce.orders.domain.Order;
-import com.hipcommerce.orders.domain.OrderItem;
 import com.hipcommerce.orders.domain.OrderSheet;
 import com.hipcommerce.orders.dto.OrderDto;
 import com.hipcommerce.orders.dto.OrderDto.OrderResult;
@@ -30,14 +29,10 @@ public class OrderService {
         dto.getDeliveryInfo(),
         dto.getOrderer()
     );
-
-    newOrder.changePayMethod(dto.getPayMethod());
-    newOrder.getOrderItems().stream()
-        .forEach(OrderItem::paid);
+    newOrder.place(dto.getPayMethod());
 
     Order savedOrder = orderPort.save(newOrder);
-    log.info("Place order={}", savedOrder);
-    log.info("orderCode={}", savedOrder.getCode());
+    log.info("place.orderCode={}", savedOrder.getCode());
     return new OrderResult(orderPort.getOrderDetail(savedOrder.getId()));
   }
 

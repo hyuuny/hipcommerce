@@ -94,9 +94,12 @@ public class Order extends BaseEntity {
     return Money.sum(this.orderItems, OrderItem::calculateTotalPrice);
   }
 
-  public void changePayMethod(PayMethod payMethod) {
+  public void place(PayMethod payMethod) {
     this.payMethod = payMethod;
+    this.orderItems.stream()
+        .forEach(OrderItem::paid);
   }
+
 
 
 }

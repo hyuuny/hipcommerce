@@ -4,6 +4,7 @@ import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.FetchType.EAGER;
 
 import com.google.common.collect.Lists;
+import com.hipcommerce.common.generators.UniqueIdGenerator;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.Column;
@@ -35,6 +36,9 @@ public class OrderSheet{
   @Include
   private Long id;
 
+  @Column(nullable = false, unique = true, updatable = false)
+  private String code;
+
   @Column(nullable = false)
   private Long userId;
 
@@ -51,6 +55,7 @@ public class OrderSheet{
       List<OrderSheetItem> orderSheetItems
   ) {
     this.userId = userId;
+    this.code = UniqueIdGenerator.nextOrderSheetCode();
     this.orderSheetItems = orderSheetItems;
   }
 

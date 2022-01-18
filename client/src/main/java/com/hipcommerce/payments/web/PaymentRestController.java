@@ -6,6 +6,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import com.hipcommerce.payments.dto.PaymentDto.PayResult;
 import com.hipcommerce.payments.dto.PaymentDto.Response;
 import com.hipcommerce.payments.service.PaymentService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.MediaTypes;
@@ -29,12 +30,14 @@ public class PaymentRestController {
   private final PaymentService paymentService;
   private final PaymentResourceAssembler paymentResourceAssembler;
 
+  @Operation(summary = "결제 결과")
   @PostMapping("/request")
   public ResponseEntity<?> requestPayments(@RequestBody PayResult payResult) {
     Response foundPayment = paymentService.payAndGet(payResult);
     return ResponseEntity.ok(paymentResourceAssembler.toModel(foundPayment));
   }
 
+  @Operation(summary = "결제 내역 상세 조회")
   @GetMapping("/{id}")
   public ResponseEntity<EntityModel<Response>> getPayment(@PathVariable final Long id) {
     Response foundPayment = paymentService.getPayment(id);

@@ -2,6 +2,7 @@ package com.hipcommerce.orders.dto;
 
 import static org.springframework.util.ObjectUtils.isEmpty;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.hipcommerce.orders.domain.DeliveryInfo;
@@ -10,6 +11,7 @@ import com.hipcommerce.orders.domain.Orderer;
 import com.hipcommerce.payments.domain.Payment;
 import com.hipcommerce.payments.domain.Payment.PayMethod;
 import com.hipcommerce.payments.domain.Payment.Status;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -142,6 +144,24 @@ public class OrderDto {
     public OrderResult(RetrieveOrderPaymentDto entity, Payment payment) {
       this.order = new OrderDto.Response(entity);
       this.payment = isEmpty(payment) ? null : new PaymentResponse(payment);
+    }
+
+    @Hidden
+    @JsonIgnore
+    public Long getId() {
+      return order.getId();
+    }
+
+    @Hidden
+    @JsonIgnore
+    public Long getUserId() {
+      return order.getUserId();
+    }
+
+    @Hidden
+    @JsonIgnore
+    public List<OrderItemDto.Response> getOrderItems() {
+      return order.getOrderItems();
     }
 
   }

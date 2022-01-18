@@ -23,6 +23,9 @@ public class OrderSheetDto {
     @Schema(description = "주문서 ID", required = true)
     private Long id;
 
+    @Schema(description = "주문서 코드", required = true)
+    private String code;
+
     @Schema(description = "유저 ID", required = true)
     private Long userId;
 
@@ -37,6 +40,7 @@ public class OrderSheetDto {
 
     public OrderSheetResult(OrderSheet entity, OrderSummary orderSummary) {
       this.id = entity.getId();
+      this.code = entity.getCode();
       this.userId = entity.getUserId();
       this.createdDate = entity.getCreatedDate();
       this.orderSheetItems = entity.getOrderSheetItems().stream()
