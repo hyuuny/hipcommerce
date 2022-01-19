@@ -40,7 +40,7 @@ public class OrderItem extends BaseNoEqualsEntity {
     WAITING_DELIVERY("배송준비"),
     DELIVERING("배송중"),
     DELIVERED("배송완료"),
-    CONFIRMED("구매완료"),
+    PURCHASE_COMPLETED("구매완료"),
     CANCEL_REQUEST("취소요청"),
     CANCEL_COMPLETE("취소완료"),
     RETURN_REQUEST("반품요청"),
@@ -108,6 +108,9 @@ public class OrderItem extends BaseNoEqualsEntity {
     this.order.getOrderItems().add(this);
   }
 
+  public void changeStatus(Status status) {
+    this.status = status;
+  }
 
   public void ordered() {
     this.status = Status.ORDERED;
@@ -134,8 +137,8 @@ public class OrderItem extends BaseNoEqualsEntity {
     this.deliveredDateTime = LocalDateTime.now();
   }
 
-  public void confirmed() {
-    this.status = Status.CONFIRMED;
+  public void purchaseCompleted() {
+    this.status = Status.PURCHASE_COMPLETED;
   }
 
   public void cancelRequest() {

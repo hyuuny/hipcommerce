@@ -1,6 +1,7 @@
 package com.hipcommerce.orders.service;
 
 import com.hipcommerce.orders.domain.Order;
+import com.hipcommerce.orders.domain.OrderItem;
 import com.hipcommerce.orders.domain.OrderSheet;
 import com.hipcommerce.orders.dto.OrderDto;
 import com.hipcommerce.orders.dto.OrderDto.OrderResult;
@@ -21,7 +22,7 @@ public class OrderService {
   private final OrderMapper orderMapper;
 
   @Transactional
-  public OrderDto.OrderResult place(OrderPlaceDto dto) {
+  public OrderResult place(OrderPlaceDto dto) {
     OrderSheet foundOrderSheet = orderPort.getOrderSheet(dto.getOrderSheetId());
     Order newOrder = orderMapper.mapForm(
         foundOrderSheet,
@@ -36,8 +37,46 @@ public class OrderService {
     return new OrderResult(orderPort.getOrderDetail(savedOrder.getId()));
   }
 
-  public OrderDto.OrderResult getOrder(final Long id) {
+  public OrderResult getOrder(final Long id) {
     return new OrderResult(orderPort.getOrderDetail(id));
+  }
+
+  @Transactional
+  public OrderResult changeDeliveryInfo(final Long id, OrderDto.ChangeDeliveryInfo dto) {
+    Order existingOrder = orderPort.getOrder(id);
+    existingOrder.changeDeliveryInfo(dto.getDeliveryInfo());
+    return getOrder(id);
+  }
+
+  @Transactional
+  public void changeOrderItemsStatus(OrderDto.ChangeOrderItemsStatus dto) {
+    dto.getChangeOrderItemStatuses().stream()
+        .forEach(changeOrderItemStatus -> {
+          OrderItem existingOrderItem = orderPort.getOrder(changeOrderItemStatus.getId(),
+              changeOrderItemStatus.getOrderItemId());
+          existingOrderItem.changeStatus(changeOrderItemStatus.getStatus());
+        });
+  }
+
+  @Transactional
+  public OrderResult purchaseCompleted(OrderDto.ChangeOrderItemStatus dto) {
+    OrderItem existingOrderItem = orderPort.getOrder(dto.getId(), dto.getOrderItemId());
+    existingOrderItem.purchaseCompleted();
+    return getOrder(existingOrderItem.getId());
+  }
+
+  @Transactional
+  public OrderResult cancelRequest(OrderDto.ChangeOrderItemStatus dto) {
+    OrderItem existingOrderItem = orderPort.getOrder(dto.getId(), dto.getOrderItemId());
+    existingOrderItem.cancelRequest();
+    return getOrder(existingOrderItem.getId());
+  }
+
+  @Transactional
+  public OrderResult returnRequest(OrderDto.ChangeOrderItemStatus dto) {
+    OrderItem existingOrderItem = orderPort.getOrder(dto.getId(), dto.getOrderItemId());
+    existingOrderItem.returnRequest();
+    return getOrder(existingOrderItem.getId());
   }
 
 }

@@ -100,6 +100,10 @@ public class Order extends BaseEntity {
         .forEach(OrderItem::paid);
   }
 
+  public void changeDeliveryInfo(DeliveryInfo deliveryInfo) {
+    this.deliveryInfo = deliveryInfo;
+  }
+
 
 
 }

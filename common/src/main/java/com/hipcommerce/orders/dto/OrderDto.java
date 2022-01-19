@@ -5,8 +5,10 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.google.common.collect.Lists;
 import com.hipcommerce.orders.domain.DeliveryInfo;
 import com.hipcommerce.orders.domain.Order;
+import com.hipcommerce.orders.domain.OrderItem;
 import com.hipcommerce.orders.domain.Orderer;
 import com.hipcommerce.payments.domain.Payment;
 import com.hipcommerce.payments.domain.Payment.PayMethod;
@@ -16,7 +18,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -165,6 +171,51 @@ public class OrderDto {
     }
 
   }
+
+  @Getter
+  @AllArgsConstructor(access = AccessLevel.PRIVATE)
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @Builder
+  @Schema(name = "OrderDto.changeOrderItemsStatus", description = "주문 상품 상태 변경 목록")
+  public static class ChangeOrderItemsStatus {
+
+    @Default
+    @Schema(description = "주문 상품 상태 변경 목록", required = true)
+    List<ChangeOrderItemStatus> changeOrderItemStatuses = Lists.newArrayList();
+
+  }
+
+  @Getter
+  @AllArgsConstructor(access = AccessLevel.PRIVATE)
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @Builder
+  @Schema(name = "OrderDto.changeOrderItemStatus", description = "주문 상품 상태 변경")
+  public static class ChangeOrderItemStatus {
+
+    @Schema(description = "아이디", example = "1", required = true)
+    private Long id;
+
+    @Schema(description = "주문 상품 ID", example = "1", required = true)
+    private Long orderItemId;
+
+    @Schema(description = "상태", example = "WAITING_DELIVERY", required = false)
+    private OrderItem.Status status;
+
+  }
+
+  @Getter
+  @AllArgsConstructor(access = AccessLevel.PRIVATE)
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @Builder
+  @Schema(name = "OrderDto.ChangeDeliveryInfo", description = "배송지 정보 변경")
+  public static class ChangeDeliveryInfo {
+
+    @NotNull
+    @Schema(description = "배송지", required = true)
+    private DeliveryInfo deliveryInfo;
+
+  }
+
 
 }
 
