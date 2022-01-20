@@ -4,6 +4,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.hipcommerce.orders.dto.OrderCheckoutDto;
+import com.hipcommerce.orders.dto.OrderDto.ChangeDeliveryInfo;
+import com.hipcommerce.orders.dto.OrderDto.ChangeOrderItemStatus;
 import com.hipcommerce.orders.dto.OrderDto.OrderResult;
 import com.hipcommerce.orders.dto.OrderPlaceDto;
 import com.hipcommerce.orders.dto.OrderSheetDto.OrderSheetResult;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -79,6 +82,43 @@ public class OrderRestController {
   public ResponseEntity<EntityModel<OrderResult>> getOrder(@PathVariable final Long id) {
     OrderResult foundOrder = orderService.getOrder(id);
     return ResponseEntity.ok(orderResourceAssembler.toModel(foundOrder));
+  }
+
+  @Operation(summary = "배송지 변경")
+  @PutMapping("/{id}/delivery")
+  public ResponseEntity<EntityModel<OrderResult>> changeDeliveryInfo(
+      @PathVariable Long id,
+      @RequestBody @Valid ChangeDeliveryInfo dto
+  ) {
+    OrderResult orderResult = orderService.changeDeliveryInfo(id, dto);
+    return ResponseEntity.ok(orderResourceAssembler.toModel(orderResult));
+  }
+
+  @Operation(summary = "구매확정")
+  @PutMapping("/purchase-complete")
+  public ResponseEntity<EntityModel<OrderResult>> purchaseComplete(
+      @RequestBody @Valid ChangeOrderItemStatus dto
+  ) {
+    OrderResult orderResult = orderService.purchaseCompleted(dto);
+    return ResponseEntity.ok(orderResourceAssembler.toModel(orderResult));
+  }
+
+  @Operation(summary = "주문 취소 요청")
+  @PutMapping("/cancel-request")
+  public ResponseEntity<EntityModel<OrderResult>> cancelRequest(
+      @RequestBody @Valid ChangeOrderItemStatus dto
+  ) {
+    OrderResult orderResult = orderService.cancelRequest(dto);
+    return ResponseEntity.ok(orderResourceAssembler.toModel(orderResult));
+  }
+
+  @Operation(summary = "주문 반품 요청")
+  @PutMapping("/return-request")
+  public ResponseEntity<EntityModel<OrderResult>> returnRequest(
+      @RequestBody @Valid ChangeOrderItemStatus dto
+  ) {
+    OrderResult orderResult = orderService.returnRequest(dto);
+    return ResponseEntity.ok(orderResourceAssembler.toModel(orderResult));
   }
 
   @Component
