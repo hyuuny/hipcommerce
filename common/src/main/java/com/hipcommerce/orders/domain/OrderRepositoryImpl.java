@@ -40,8 +40,8 @@ public class OrderRepositoryImpl extends Querydsl4RepositorySupport implements
       final Long orderItemId
   ) {
     OrderItem foundOrderItem = getQueryFactory()
-        .selectFrom(QOrderItem.orderItem)
-        .join(order, QOrderItem.orderItem.order)
+        .selectFrom(orderItem)
+        .join(order).on(order.id.eq(orderItem.order.id))
         .where(
             orderIdEq(id),
             orderItemEq(orderItemId)

@@ -52,7 +52,7 @@ public class OrderService {
   public void changeOrderItemsStatus(OrderDto.ChangeOrderItemsStatus dto) {
     dto.getChangeOrderItemStatuses().stream()
         .forEach(changeOrderItemStatus -> {
-          OrderItem existingOrderItem = orderPort.getOrder(changeOrderItemStatus.getId(),
+          OrderItem existingOrderItem = orderPort.getOrder(changeOrderItemStatus.getOrderId(),
               changeOrderItemStatus.getOrderItemId());
           existingOrderItem.changeStatus(changeOrderItemStatus.getStatus());
         });
@@ -60,23 +60,23 @@ public class OrderService {
 
   @Transactional
   public OrderResult purchaseCompleted(OrderDto.ChangeOrderItemStatus dto) {
-    OrderItem existingOrderItem = orderPort.getOrder(dto.getId(), dto.getOrderItemId());
+    OrderItem existingOrderItem = orderPort.getOrder(dto.getOrderId(), dto.getOrderItemId());
     existingOrderItem.purchaseCompleted();
-    return getOrder(existingOrderItem.getId());
+    return getOrder(dto.getOrderId());
   }
 
   @Transactional
   public OrderResult cancelRequest(OrderDto.ChangeOrderItemStatus dto) {
-    OrderItem existingOrderItem = orderPort.getOrder(dto.getId(), dto.getOrderItemId());
+    OrderItem existingOrderItem = orderPort.getOrder(dto.getOrderId(), dto.getOrderItemId());
     existingOrderItem.cancelRequest();
-    return getOrder(existingOrderItem.getId());
+    return getOrder(dto.getOrderId());
   }
 
   @Transactional
   public OrderResult returnRequest(OrderDto.ChangeOrderItemStatus dto) {
-    OrderItem existingOrderItem = orderPort.getOrder(dto.getId(), dto.getOrderItemId());
+    OrderItem existingOrderItem = orderPort.getOrder(dto.getOrderId(), dto.getOrderItemId());
     existingOrderItem.returnRequest();
-    return getOrder(existingOrderItem.getId());
+    return getOrder(dto.getOrderId());
   }
 
 }

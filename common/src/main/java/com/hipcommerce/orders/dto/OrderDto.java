@@ -193,8 +193,8 @@ public class OrderDto {
   public static class ChangeOrderItemStatus {
 
     @NotNull
-    @Schema(description = "아이디", example = "1", required = true)
-    private Long id;
+    @Schema(description = "주문 ID", example = "1", required = true)
+    private Long orderId;
 
     @NotNull
     @Schema(description = "주문 상품 ID", example = "1", required = true)
