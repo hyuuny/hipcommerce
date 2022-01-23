@@ -4,11 +4,15 @@ import com.hipcommerce.orders.domain.Order;
 import com.hipcommerce.orders.domain.OrderItem;
 import com.hipcommerce.orders.domain.OrderSheet;
 import com.hipcommerce.orders.dto.OrderDto;
+import com.hipcommerce.orders.dto.OrderDto.DetailedSearchCondition;
 import com.hipcommerce.orders.dto.OrderDto.OrderResult;
+import com.hipcommerce.orders.dto.OrderDto.Response;
 import com.hipcommerce.orders.dto.OrderPlaceDto;
 import com.hipcommerce.orders.port.OrderPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +50,11 @@ public class OrderService {
     Order existingOrder = orderPort.getOrder(id);
     existingOrder.changeDeliveryInfo(dto.getDeliveryInfo());
     return getOrder(id);
+  }
+
+  public Page<Response> retrieveOrder(DetailedSearchCondition searchCondition, Pageable pageable) {
+    Page<Response> orders = orderPort.retrieveOrder(searchCondition, pageable);
+    return orders;
   }
 
   @Transactional

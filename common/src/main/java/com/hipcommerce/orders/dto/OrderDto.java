@@ -15,6 +15,7 @@ import com.hipcommerce.payments.domain.Payment.PayMethod;
 import com.hipcommerce.payments.domain.Payment.Status;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +27,8 @@ import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.hateoas.server.core.Relation;
 
 public class OrderDto {
@@ -66,6 +69,20 @@ public class OrderDto {
     private PaymentResponse payment;
 
     public Response(RetrieveOrderPaymentDto entity) {
+      this.id = entity.getId();
+      this.orderCode = entity.getOrderCode();
+      this.userId = entity.getUserId();
+      this.deliveryInfo = entity.getDeliveryInfo();
+      this.orderer = entity.getOrderer();
+      this.payMethod = entity.getPayMethod();
+      this.orderSummary = new OrderSummaryDto.Response(entity.getOrderSummary());
+      this.orderItems = entity.getOrderItems().stream()
+          .map(OrderItemDto.Response::new)
+          .collect(Collectors.toList());
+      this.payment = isEmpty(entity.getPayment()) ? null : new PaymentResponse(entity.getPayment());
+    }
+
+    public Response(OrderSearchDto entity) {
       this.id = entity.getId();
       this.orderCode = entity.getOrderCode();
       this.userId = entity.getUserId();
@@ -215,6 +232,61 @@ public class OrderDto {
     @NotNull
     @Schema(description = "배송지", required = true)
     private DeliveryInfo deliveryInfo;
+
+  }
+
+  @Setter
+  @Getter
+  @AllArgsConstructor(access = AccessLevel.PRIVATE)
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @Builder
+  @Schema(description = "주문 상세검색조건")
+  public static class DetailedSearchCondition {
+
+    @Schema(description = "주문상태", example = "PAID", required = false)
+    private OrderItem.Status status;
+
+    @Schema(description = "검색 옵션", example = "ordererName", required = false)
+    private String searchOption;
+
+    @Schema(description = "검색어", example = "나주문", required = false)
+    private String keyword;
+
+    @Schema(description = "주문코드", example = "O201801310000050", required = false)
+    private String orderCode;
+
+    @Schema(description = "상품명", example = "카고바지", required = false)
+    private String productName;
+
+    @Schema(description = "상품코드", example = "P20220109140753969", required = false)
+    private String productCode;
+
+    @Schema(description = "수령인", example = "나받음", required = false)
+    private String recipientName;
+
+    @Schema(description = "주문자 이메일", example = "orderer@naver.com", required = false)
+    private String ordererEmail;
+
+    @Schema(description = "주문자명", example = "나주문", required = false)
+    private String ordererName;
+
+    @Schema(description = "주문자 휴대전화", example = "01012341234", required = false)
+    private String ordererMobilePhone;
+
+    @Schema(description = "결제방법", example = "CARD", required = false)
+    private Order.PayMethod payMethod;
+
+    @Default
+    @Schema(description = "기간검색타입", example = "createdAt")
+    private String periodType = "createdDate";
+
+    @DateTimeFormat(iso = ISO.DATE)
+    @Schema(description = "기간시작일", example = "2022-01-22")
+    private LocalDate fromDate;
+
+    @DateTimeFormat(iso = ISO.DATE)
+    @Schema(description = "기간종료일", example = "2022-01-23")
+    private LocalDate toDate;
 
   }
 
