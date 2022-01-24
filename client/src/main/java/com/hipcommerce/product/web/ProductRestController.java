@@ -8,6 +8,7 @@ import com.hipcommerce.product.dto.ProductDto;
 import com.hipcommerce.product.dto.ProductDto.Response;
 import com.hipcommerce.product.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "상품 API")
 @RequiredArgsConstructor
 @RequestMapping(path = ProductRestController.REQUEST_URL, produces = MediaTypes.HAL_JSON_VALUE)
 @RestController

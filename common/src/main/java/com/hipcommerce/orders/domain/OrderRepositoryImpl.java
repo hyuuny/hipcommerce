@@ -161,8 +161,8 @@ public class OrderRepositoryImpl extends Querydsl4RepositorySupport implements
     );
   }
 
-  private BooleanExpression orderItemProductNameContains(final String orderItemProductName) {
-    return isEmpty(orderItemProductName) ? null : orderItem.name.contains(orderItemProductName);
+  private BooleanExpression orderItemProductNameContains(final String productName) {
+    return isEmpty(productName) ? null : orderItem.name.contains(productName);
   }
 
   private BooleanExpression orderItemProductCodeEq(final String productCode) {

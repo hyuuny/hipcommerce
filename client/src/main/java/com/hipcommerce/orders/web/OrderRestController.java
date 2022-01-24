@@ -12,6 +12,7 @@ import com.hipcommerce.orders.dto.OrderSheetDto.OrderSheetResult;
 import com.hipcommerce.orders.service.OrderService;
 import com.hipcommerce.orders.service.OrderSheetService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.validation.Valid;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "주문 API")
 @RequiredArgsConstructor
 @RequestMapping(path = OrderRestController.REQUEST_URL, produces = MediaTypes.HAL_JSON_VALUE)
 @RestController
