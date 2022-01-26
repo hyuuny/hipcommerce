@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+  redis:
+    image: redis:latest
+    restart: always
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ~/docker-volumes/redis/data:/data
