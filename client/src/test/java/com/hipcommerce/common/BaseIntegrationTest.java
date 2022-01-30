@@ -1,15 +1,24 @@
 package com.hipcommerce.common;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hipcommerce.config.security.model.Credential;
+import com.hipcommerce.members.dto.MemberDto;
+import com.hipcommerce.members.dto.MemberDto.UserWithToken;
+import java.security.AuthProvider;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.hateoas.MediaTypes;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 @ExtendWith(SpringExtension.class)
 @MockMvcCustomConfig
@@ -36,6 +45,30 @@ public abstract class BaseIntegrationTest {
   @Autowired
   protected EntityManager em;
 
+  protected String getBearerToken(final String username, final String password) throws Exception {
+    Credential credential = Credential.builder()
+        .username(username)
+        .password(password)
+        .build();
+    return getBearerToken(credential);
+  }
+
+  protected String getBearerToken(Credential credential) throws Exception {
+    return "Bearer " + getAccessToken(credential);
+  }
+
+  protected String getAccessToken(Credential credential) throws Exception {
+    ResultActions perform = this.mockMvc.perform(
+        post("/auth")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaTypes.HAL_JSON_VALUE)
+            .content(this.objectMapper.writeValueAsString(credential)));
+
+    String responseBody = perform.andReturn().getResponse().getContentAsString();
+    String accessToken = objectMapper.readValue(responseBody, UserWithToken.class).getToken()
+        .getAccessToken();
+    return accessToken;
+  }
 
   protected void flushWithClearEntityContext() {
     em.flush();

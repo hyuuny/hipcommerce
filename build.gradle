@@ -43,6 +43,16 @@ subprojects {
         annotationProcessor 'org.projectlombok:lombok'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         implementation 'com.google.guava:guava:29.0-jre'
+        implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+        implementation 'org.springframework.boot:spring-boot-starter-security'
+        implementation 'joda-time:joda-time:2.10.13'
+
+
+        // jwt
+        implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+        runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
+        runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
 
         // Web
         implementation 'org.thymeleaf:thymeleaf:3.0.11.RELEASE'
@@ -67,6 +77,9 @@ subprojects {
 
         // Pebble
         implementation 'io.pebbletemplates:pebble-spring-boot-2-starter:3.0.6'
+
+        // Embedded Redis
+        implementation 'it.ozimov:embedded-redis:0.7.2'
 
     }
 

@@ -2,6 +2,7 @@ package com.hipcommerce.common.web.advice;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.hipcommerce.common.exceptions.UserNotFoundException;
 import com.hipcommerce.common.web.model.HttpStatusMessageException;
 import com.hipcommerce.common.web.model.ErrorResponse;
 import com.hipcommerce.common.web.model.ErrorResponse.FieldError;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -110,6 +112,19 @@ public class CommonRestControllerAdvice extends ResponseEntityExceptionHandler {
     );
   }
 
+  @ExceptionHandler({UserNotFoundException.class})
+  protected ResponseEntity<Object> handleUserNotFoundException(
+      final Exception ex
+  ) {
+    return toErrorResponse(
+        ex,
+        HttpStatus.UNAUTHORIZED,
+        "user.notFound",
+        ex.getMessage(),
+        null
+    );
+  }
+
   @ExceptionHandler(HttpStatusCodeException.class)
   protected ResponseEntity<Object> httpStatusCodeException(
       final HttpStatusCodeException ex
@@ -130,6 +145,20 @@ public class CommonRestControllerAdvice extends ResponseEntityExceptionHandler {
     final Object[] args = ex.getArgs();
 
     return toErrorResponse(ex, status, code, ex.getMessage(), null, args);
+  }
+
+  @ExceptionHandler({AuthenticationException.class})
+  protected ResponseEntity<Object> handleAuthenticationException(
+      final Exception ex,
+      final WebRequest request
+  ) {
+    return toErrorResponse(
+        ex,
+        HttpStatus.UNAUTHORIZED,
+        null,
+        ex.getMessage(),
+        null
+    );
   }
 
   @JsonInclude(Include.NON_EMPTY)
