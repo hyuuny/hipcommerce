@@ -1,5 +1,7 @@
 package com.hipcommerce.categories.web;
 
+import static com.hipcommerce.DummyData.ADMIN_EMAIL;
+import static com.hipcommerce.DummyData.ADMIN_PASSWORD;
 import static com.hipcommerce.DummyData.aCategory;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -57,6 +59,7 @@ class CategoryAdminRestControllerTest extends BaseIntegrationTest {
     mockMvc.perform(get(CategoryAdminRestController.REQUEST_URL)
 //            .param("searchOption", "categoryName")
 //            .param("keyword", "3번째 카테고리")
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
@@ -82,6 +85,7 @@ class CategoryAdminRestControllerTest extends BaseIntegrationTest {
     Create createCategory = aCategory().build();
 
     mockMvc.perform(post(CategoryAdminRestController.REQUEST_URL)
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
             .content(this.objectMapper.writeValueAsString(createCategory))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
@@ -104,6 +108,7 @@ class CategoryAdminRestControllerTest extends BaseIntegrationTest {
 
     this.mockMvc.perform(
             post(CategoryAdminRestController.REQUEST_URL + "/{id}/children", savedParentCategoryId)
+                .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
                 .content(this.objectMapper.writeValueAsString(createChild1))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaTypes.HAL_JSON_VALUE))
@@ -119,6 +124,7 @@ class CategoryAdminRestControllerTest extends BaseIntegrationTest {
 
     this.mockMvc.perform(
             get(CategoryAdminRestController.REQUEST_URL + "/{id}", savedCategory.getId())
+                .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
@@ -145,6 +151,7 @@ class CategoryAdminRestControllerTest extends BaseIntegrationTest {
         .build();
 
     this.mockMvc.perform(put(CategoryAdminRestController.REQUEST_URL + "/{id}", savedCategoryId)
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
             .content(this.objectMapper.writeValueAsString(updateCategory))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
@@ -164,6 +171,7 @@ class CategoryAdminRestControllerTest extends BaseIntegrationTest {
     Long savedCategoryId = categoryService.createCategory(aCategory().build());
 
     this.mockMvc.perform(delete(CategoryAdminRestController.REQUEST_URL + "/{id}", savedCategoryId)
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
@@ -183,6 +191,7 @@ class CategoryAdminRestControllerTest extends BaseIntegrationTest {
     });
 
     this.mockMvc.perform(get(CategoryAdminRestController.REQUEST_URL + "/all")
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
         .content(MediaType.APPLICATION_JSON_VALUE)
         .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
@@ -211,6 +220,7 @@ class CategoryAdminRestControllerTest extends BaseIntegrationTest {
 
     this.mockMvc.perform(
             get(CategoryAdminRestController.REQUEST_URL + "/{id}/children", savedParentCategoryId)
+                .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())

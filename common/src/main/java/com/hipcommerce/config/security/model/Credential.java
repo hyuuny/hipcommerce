@@ -11,7 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 @Schema(description = "로그인 요청 정보")
 public class Credential {
 
-  @Schema(description = "이메일", example = "prumwellness@prumwellness.com", required = false)
+  @Schema(description = "이메일", example = "shyune@knou.ac.kr", required = false)
   private String username;
 
   @Schema(description = "비밀번호", example = "secret", required = false)

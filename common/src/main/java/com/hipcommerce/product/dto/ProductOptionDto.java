@@ -2,6 +2,10 @@ package com.hipcommerce.product.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.hipcommerce.common.money.domain.Money;
 import com.hipcommerce.product.domain.ProductOption;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -74,9 +78,13 @@ public class ProductOptionDto {
     @Schema(description = "옵션 이미지", example = "https://hipcommerce-bucket.s3.ap-northeast-2.amazonaws.com/data/image_1596187406745_1000.jpg", required = false)
     private String imageUrl;
 
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @Schema(description = "등록일", example = "2022-01-11T13:16:32.139065", required = false)
     private LocalDateTime createdDate;
 
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @Schema(description = "수정일", example = "2022-01-12T15:42:06.139065", required = false)
     private LocalDateTime lastModifiedDate;
 

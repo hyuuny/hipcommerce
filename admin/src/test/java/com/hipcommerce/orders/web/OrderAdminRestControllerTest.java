@@ -1,5 +1,7 @@
 package com.hipcommerce.orders.web;
 
+import static com.hipcommerce.DummyData.ADMIN_EMAIL;
+import static com.hipcommerce.DummyData.ADMIN_PASSWORD;
 import static com.hipcommerce.DummyData.aCategory;
 import static com.hipcommerce.DummyData.aProduct;
 import static org.hamcrest.Matchers.hasSize;
@@ -110,6 +112,7 @@ class OrderAdminRestControllerTest extends BaseIntegrationTest {
     });
 
     mockMvc.perform(get(OrderAdminRestController.REQUEST_URL)
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
@@ -199,6 +202,7 @@ class OrderAdminRestControllerTest extends BaseIntegrationTest {
     OrderResult orderResult = orderService.place(createOrder);
 
     this.mockMvc.perform(get(OrderAdminRestController.REQUEST_URL + "/{id}", orderResult.getId())
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
@@ -238,6 +242,7 @@ class OrderAdminRestControllerTest extends BaseIntegrationTest {
         .build();
 
     this.mockMvc.perform(put(OrderAdminRestController.REQUEST_URL + "/change-statuses")
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
         .content(this.objectMapper.writeValueAsString(changeOrderItemsStatus))
         .contentType(MediaType.APPLICATION_JSON_VALUE)
         .accept(MediaTypes.HAL_JSON_VALUE))
@@ -265,6 +270,7 @@ class OrderAdminRestControllerTest extends BaseIntegrationTest {
         .build();
 
     this.mockMvc.perform(put(OrderAdminRestController.REQUEST_URL + "/{id}/delivery", orderResult.getId())
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
             .content(this.objectMapper.writeValueAsString(updateDeliveryInfo))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))

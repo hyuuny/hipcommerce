@@ -1,12 +1,13 @@
 package com.hipcommerce.common;
 
+import static com.hipcommerce.DummyData.ADMIN_EMAIL;
+import static com.hipcommerce.DummyData.USER_EMAIL;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hipcommerce.config.security.model.Credential;
-import com.hipcommerce.members.dto.MemberDto;
+import com.hipcommerce.members.domain.MemberRepository;
 import com.hipcommerce.members.dto.MemberDto.UserWithToken;
-import java.security.AuthProvider;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
@@ -41,6 +42,8 @@ public abstract class BaseIntegrationTest {
   @Autowired
   protected ModelMapper modelMapper;
 
+  @Autowired
+  protected MemberRepository memberRepository;
 
   @Autowired
   protected EntityManager em;
@@ -73,6 +76,13 @@ public abstract class BaseIntegrationTest {
   protected void flushWithClearEntityContext() {
     em.flush();
     em.clear();
+  }
+
+  protected void deleteMembers() throws Exception {
+    memberRepository.findAll().stream()
+        .filter(account -> !account.getUsername().equals(ADMIN_EMAIL))
+        .filter(account -> !account.getUsername().equals(USER_EMAIL))
+        .forEach(member -> memberRepository.delete(member));
   }
 
 }

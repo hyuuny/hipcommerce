@@ -17,12 +17,12 @@ import lombok.NoArgsConstructor;
 public class RefreshToken {
 
   @Id
-  private String key;
+  private String tokenKey;
 
-  private String value;
+  private String tokenValue;
 
   public RefreshToken updateValue(String token) {
-    this.value = token;
+    this.tokenValue = token;
     return this;
   }
 

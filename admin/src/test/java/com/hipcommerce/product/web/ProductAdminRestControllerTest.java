@@ -1,5 +1,7 @@
 package com.hipcommerce.product.web;
 
+import static com.hipcommerce.DummyData.ADMIN_EMAIL;
+import static com.hipcommerce.DummyData.ADMIN_PASSWORD;
 import static com.hipcommerce.DummyData.aCategory;
 import static com.hipcommerce.DummyData.aProduct;
 import static org.hamcrest.Matchers.hasSize;
@@ -18,6 +20,7 @@ import com.hipcommerce.categories.dto.CategoryDto;
 import com.hipcommerce.categories.service.CategoryService;
 import com.hipcommerce.categories.web.CategoryAdminRestController;
 import com.hipcommerce.common.BaseIntegrationTest;
+import com.hipcommerce.members.domain.MemberRepository;
 import com.hipcommerce.product.domain.Product.Status;
 import com.hipcommerce.product.domain.ProductRepository;
 import com.hipcommerce.product.dto.ProductDto.Create;
@@ -94,6 +97,7 @@ class ProductAdminRestControllerTest extends BaseIntegrationTest {
 //            .param("searchOption", "productName")
 //            .param("keyword", "슬렉스")
 //            .param("categoryId", "1")
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
@@ -120,6 +124,7 @@ class ProductAdminRestControllerTest extends BaseIntegrationTest {
     Create createProduct = aProduct().categoryId(1L).build();
 
     mockMvc.perform(post(ProductAdminRestController.REQUEST_URL)
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
             .content(this.objectMapper.writeValueAsString(createProduct))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
@@ -135,6 +140,7 @@ class ProductAdminRestControllerTest extends BaseIntegrationTest {
 
     this.mockMvc.perform(
             get(ProductAdminRestController.REQUEST_URL + "/{id}", savedProduct.getId())
+                .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
@@ -188,6 +194,7 @@ class ProductAdminRestControllerTest extends BaseIntegrationTest {
         .build();
 
     this.mockMvc.perform(put(ProductAdminRestController.REQUEST_URL + "/{id}", savedProductId)
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
             .content(this.objectMapper.writeValueAsString(updateProduct))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
@@ -216,6 +223,7 @@ class ProductAdminRestControllerTest extends BaseIntegrationTest {
     Long savedProductId = productService.createProduct(aProduct().categoryId(category1.getId()).build());
 
     this.mockMvc.perform(delete(ProductAdminRestController.REQUEST_URL + "/{id}", savedProductId)
+            .header(HttpHeaders.AUTHORIZATION, getBearerToken(ADMIN_EMAIL, ADMIN_PASSWORD))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())

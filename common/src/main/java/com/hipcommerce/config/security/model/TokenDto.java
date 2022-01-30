@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Schema(description = "AccessToken")
 @JsonInclude(Include.NON_EMPTY)
-public class AccessToken {
+정public class TokenDto {
 
   @JsonProperty("access_token")
   private String accessToken;
@@ -24,7 +24,7 @@ public class AccessToken {
   @JsonProperty("refresh_token")
   private String refreshToken;
 
-  public AccessToken(AccessToken token) {
+  public TokenDto(TokenDto token) {
     this.accessToken = token.accessToken;
     this.refreshToken = token.refreshToken;
   }

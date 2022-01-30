@@ -1,11 +1,9 @@
-package com.hipcommerce.config.security.provider;
-
-import static org.springframework.util.ObjectUtils.isEmpty;
+package com.hipcommerce.config.security.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
-import com.hipcommerce.config.security.model.AccessToken;
+import com.hipcommerce.config.security.model.TokenDto;
 import com.hipcommerce.config.security.model.AuthenticatedMember;
 import com.hipcommerce.members.service.MemberAdapter;
 import io.jsonwebtoken.Claims;
@@ -20,6 +18,7 @@ import java.security.Key;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -29,15 +28,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class TokenProvider {
+public class JwtUtil {
 
   private static final String AUTHORITIES_KEY = "auth";
 
@@ -54,7 +51,7 @@ public class TokenProvider {
 
   private final ObjectMapper objectMapper;
 
-  public TokenProvider(
+  public JwtUtil(
       @Value("${spring.jwt.secret}") String secretKey,
       ObjectMapper objectMapper
   ) {
@@ -63,7 +60,7 @@ public class TokenProvider {
     this.objectMapper = objectMapper;
   }
 
-  public AccessToken generateToken(Authentication authentication) {
+  public TokenDto generateToken(Authentication authentication) {
     Map<String, Object> headers = Maps.newHashMap();
     headers.put("typ", "JWT");
     headers.put("alg", "HS256");
@@ -78,26 +75,24 @@ public class TokenProvider {
         .collect(Collectors.joining(","));
 
     // Access Token 생성
-    DateTime accessTokenExpiresIn = new DateTime();
     String accessToken = Jwts.builder()
         .setHeader(headers)
         .setIssuer(issuer)
         .setSubject(authentication.getName())       // payload "sub": "name"
         .claim(AUTHORITIES_KEY, authorities)        // payload "auth": "ROLE_USER"
-        .setExpiration(accessTokenExpiresIn.plus(accessExpiration.toMillis()).toDate())        // payload "exp": 1516239022 (예시)
+        .setExpiration(new DateTime().plus(accessExpiration.toMillis()).toDate())        // payload "exp": 1516239022 (예시)
         .signWith(key, SignatureAlgorithm.HS512)    // header "alg": "HS512"
         .setAudience("user")
         .addClaims(claims)
         .compact();
 
     // Refresh Token 생성
-    DateTime refreshTokenExpiresIn = new DateTime();
     String refreshToken = Jwts.builder()
-        .setExpiration(refreshTokenExpiresIn.plus(refreshExpiration.toMillis()).toDate())
+        .setExpiration(new DateTime().plus(refreshExpiration.toMillis()).toDate())
         .signWith(key, SignatureAlgorithm.HS512)
         .compact();
 
-    return AccessToken.builder()
+    return TokenDto.builder()
         .accessToken(accessToken)
         .refreshToken(refreshToken)
         .build();
@@ -127,7 +122,6 @@ public class TokenProvider {
 
     // UserDetails 객체를 만들어서 Authentication 리턴
     UserDetails principal = new User(claims.getSubject(), "", authorities);
-
     return new UsernamePasswordAuthenticationToken(principal, null, authorities);
   }
 
@@ -153,6 +147,12 @@ public class TokenProvider {
     } catch (ExpiredJwtException e) {
       return e.getClaims();
     }
+  }
+
+  public Long getExpiration(String accessToken) {
+    Long now = new Date().getTime();
+    Date expiration = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody().getExpiration();
+    return (expiration.getTime() - now);
   }
 
 }

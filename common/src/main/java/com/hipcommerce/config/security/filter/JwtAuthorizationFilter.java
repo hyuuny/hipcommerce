@@ -5,7 +5,7 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hipcommerce.config.security.model.AuthenticatedMember;
-import com.hipcommerce.config.security.provider.TokenProvider;
+import com.hipcommerce.config.security.utils.JwtUtil;
 import com.hipcommerce.members.service.MemberAdapter;
 import io.jsonwebtoken.Claims;
 import java.io.IOException;
@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -31,7 +30,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
   public static final String AUTHORIZATION_HEADER = "Authorization";
   public static final String BEARER_PREFIX = "Bearer ";
 
-  private final TokenProvider tokenProvider;
+  private final JwtUtil jwtUtil;
   private final ObjectMapper objectMapper;
 
   // 실제 필터링 로직은 doFilterInternal 에 들어감
@@ -47,31 +46,33 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     String jwt = resolveToken(request);
 
     // 2. validateToken 으로 토큰 유효성 검사
-    // 정상 토큰이면 해당 토큰으로 Authentication 을 가져와서 SecurityContext 에 저장
-    if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-      Claims claims = tokenProvider.parseClaims(jwt);
-      try {
-        String userData = (String) claims.get("user");
-        if (!isEmpty(userData)) {
-          AuthenticatedMember authenticatedMember = objectMapper
-              .readValue(userData, AuthenticatedMember.class);
-          MemberAdapter user = authenticatedMember.toUser();
-          UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user,
-              null, user.getAuthorities());
-          SecurityContext context = SecurityContextHolder.createEmptyContext();
-          context.setAuthentication(auth);
-          SecurityContextHolder.setContext(context);
-        }
-      } catch (JsonProcessingException e) {
-        e.printStackTrace();
+    if (StringUtils.hasText(jwt) && jwtUtil.validateToken(jwt)) {
+      Claims claims = jwtUtil.parseClaims(jwt);
+      String userData = (String) claims.get("user");
+      if (!isEmpty(userData)) {
+        AuthenticatedMember authenticatedMember = getReadValue(userData);
+        MemberAdapter user = authenticatedMember.toUser();
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user,
+            null, user.getAuthorities());
+
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(auth);
+        SecurityContextHolder.setContext(context);
       }
 
-
-//      Authentication authentication = tokenProvider.getAuthentication(jwt);
-//      SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     filterChain.doFilter(request, response);
+  }
+
+  private AuthenticatedMember getReadValue(String userData) {
+    try {
+      return objectMapper.readValue(userData, AuthenticatedMember.class);
+    } catch (JsonProcessingException e) {
+      log.error("JwtAuthorizationFilter Error={}", e.getMessage());
+      e.printStackTrace();
+      throw new RuntimeException(e);
+    }
   }
 
   // Request Header 에서 토큰 정보를 꺼내오기

@@ -29,12 +29,12 @@ public class TestApplicationRunner implements ApplicationRunner {
 
   @Override
   public void run(ApplicationArguments args) {
-    log.info("CLIENT TestApplicationRunner start");
+    log.info("ADMIN TestApplicationRunner start");
 
     Optional<Member> optionalAdmin = memberRepository.findByUsername(ADMIN_EMAIL);
     if (optionalAdmin.isEmpty()) {
       SignUpRequest admin = anAdmin().build();
-      memberSignUpService.signUp(admin, Sets.newHashSet(Authority.USER));
+      memberSignUpService.signUp(admin, Sets.newHashSet(Authority.ADMIN));
     }
 
     Optional<Member> optionalUser = memberRepository.findByUsername(USER_EMAIL);

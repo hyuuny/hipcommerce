@@ -1,5 +1,7 @@
 package com.hipcommerce.orders.web;
 
+import static com.hipcommerce.DummyData.USER_EMAIL;
+import static com.hipcommerce.DummyData.USER_PASSWORD;
 import static com.hipcommerce.DummyData.aCategory;
 import static com.hipcommerce.DummyData.aProduct;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,6 +20,7 @@ import com.hipcommerce.categories.service.CategoryService;
 import com.hipcommerce.common.BaseIntegrationTest;
 import com.hipcommerce.common.address.domain.Address;
 import com.hipcommerce.common.money.domain.Money;
+import com.hipcommerce.members.domain.MemberRepository;
 import com.hipcommerce.orders.domain.DeliveryInfo;
 import com.hipcommerce.orders.domain.Order.PayMethod;
 import com.hipcommerce.orders.domain.OrderItem.Status;
@@ -74,8 +77,12 @@ class OrderRestControllerTest extends BaseIntegrationTest {
   @Autowired
   private CategoryService categoryService;
 
+  @Autowired
+  private MemberRepository memberRepository;
+
   private Long categoryId1;
   private Long categoryId2;
+  private Long userId;
 
   @BeforeEach
   void setUp() {
@@ -83,15 +90,17 @@ class OrderRestControllerTest extends BaseIntegrationTest {
         aCategory().name("상의").priorityNumber(1).build()).getId();
     categoryId2 = categoryService.createCategoryAndGet(
         aCategory().name("바지").priorityNumber(1).build()).getId();
+    userId = memberRepository.findByUsername(USER_EMAIL).orElseThrow().getId();
   }
 
   @AfterEach
-  void tearDown() {
+  void tearDown() throws Exception {
     log.info("OrderRestControllerTest.deleteAll");
     orderSheetRepository.deleteAll();
     orderRepository.deleteAll();
     productRepository.deleteAll();
     categoryRepository.deleteAll();
+    deleteMembers();
   }
 
   @DisplayName("주문 체크아웃")
@@ -107,6 +116,7 @@ class OrderRestControllerTest extends BaseIntegrationTest {
     long orderingDiscountPrice2 = 5000L;
 
     this.mockMvc.perform(post(OrderRestController.REQUEST_URL + "/ordering-products/checkout")
+            .header(HttpHeaders.AUTHORIZATION, this.getBearerToken(USER_EMAIL, USER_PASSWORD))
             .content(this.objectMapper.writeValueAsString(orderCheckoutDto))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
@@ -120,18 +130,23 @@ class OrderRestControllerTest extends BaseIntegrationTest {
         .andExpect(
             jsonPath("$.orderSheetItems[0].calculatedPrice").value(orderingPrice1 * 5))
         .andExpect(
-            jsonPath("$.orderSheetItems[0].calculatedDiscountPrice").value(orderingDiscountPrice1 * 5))
+            jsonPath("$.orderSheetItems[0].calculatedDiscountPrice").value(
+                orderingDiscountPrice1 * 5))
         .andExpect(
             jsonPath("$.orderSheetItems[1].calculatedPrice").value(orderingPrice2 * 2))
         .andExpect(
-            jsonPath("$.orderSheetItems[1].calculatedDiscountPrice").value(orderingDiscountPrice2 * 2))
+            jsonPath("$.orderSheetItems[1].calculatedDiscountPrice").value(
+                orderingDiscountPrice2 * 2))
         .andExpect(
-            jsonPath("$.orderSummary.totalProductPrice").value((orderingPrice1 * 5) + (orderingPrice2 * 2)))
+            jsonPath("$.orderSummary.totalProductPrice").value(
+                (orderingPrice1 * 5) + (orderingPrice2 * 2)))
         .andExpect(
-            jsonPath("$.orderSummary.totalDiscountPrice").value((orderingDiscountPrice1 * 5) + (orderingDiscountPrice2 * 2)))
+            jsonPath("$.orderSummary.totalDiscountPrice").value(
+                (orderingDiscountPrice1 * 5) + (orderingDiscountPrice2 * 2)))
         .andExpect(
             jsonPath("$.orderSummary.totalPrice")
-                .value(((orderingPrice1 * 5) - (orderingDiscountPrice1 * 5)) + ((orderingPrice2 * 2) - (orderingDiscountPrice2 * 2))))
+                .value(((orderingPrice1 * 5) - (orderingDiscountPrice1 * 5)) + ((orderingPrice2 * 2)
+                    - (orderingDiscountPrice2 * 2))))
     ;
   }
 
@@ -159,10 +174,12 @@ class OrderRestControllerTest extends BaseIntegrationTest {
             .build());
   }
 
-  private OrderCheckoutDto createOrderCheckoutDto(Response orderingProduct1,
-      Response orderingProduct2) {
+  private OrderCheckoutDto createOrderCheckoutDto(
+      Response orderingProduct1,
+      Response orderingProduct2
+  ) {
     return new OrderCheckoutDto(
-        1L,
+        userId,
         Lists.newArrayList(
             new OrderCheckoutItem(
                 orderingProduct1.getId(),
@@ -193,10 +210,12 @@ class OrderRestControllerTest extends BaseIntegrationTest {
     long orderingPrice2 = 25000L;
     long orderingDiscountPrice2 = 5000L;
 
-    this.mockMvc.perform(get(OrderRestController.REQUEST_URL + "/order-sheets/{orderSheetId}",
-            savedOrderSheet.getId())
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaTypes.HAL_JSON_VALUE))
+    this.mockMvc.perform(
+            get(OrderRestController.REQUEST_URL + "/order-sheets/{orderSheetId}",
+                savedOrderSheet.getId())
+                .header(HttpHeaders.AUTHORIZATION, this.getBearerToken(USER_EMAIL, USER_PASSWORD))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(
@@ -207,18 +226,23 @@ class OrderRestControllerTest extends BaseIntegrationTest {
         .andExpect(
             jsonPath("$.orderSheetItems[0].calculatedPrice").value(orderingPrice1 * 5))
         .andExpect(
-            jsonPath("$.orderSheetItems[0].calculatedDiscountPrice").value(orderingDiscountPrice1 * 5))
+            jsonPath("$.orderSheetItems[0].calculatedDiscountPrice").value(
+                orderingDiscountPrice1 * 5))
         .andExpect(
             jsonPath("$.orderSheetItems[1].calculatedPrice").value(orderingPrice2 * 2))
         .andExpect(
-            jsonPath("$.orderSheetItems[1].calculatedDiscountPrice").value(orderingDiscountPrice2 * 2))
+            jsonPath("$.orderSheetItems[1].calculatedDiscountPrice").value(
+                orderingDiscountPrice2 * 2))
         .andExpect(
-            jsonPath("$.orderSummary.totalProductPrice").value((orderingPrice1 * 5) + (orderingPrice2 * 2)))
+            jsonPath("$.orderSummary.totalProductPrice").value(
+                (orderingPrice1 * 5) + (orderingPrice2 * 2)))
         .andExpect(
-            jsonPath("$.orderSummary.totalDiscountPrice").value((orderingDiscountPrice1 * 5) + (orderingDiscountPrice2 * 2)))
+            jsonPath("$.orderSummary.totalDiscountPrice").value(
+                (orderingDiscountPrice1 * 5) + (orderingDiscountPrice2 * 2)))
         .andExpect(
             jsonPath("$.orderSummary.totalPrice")
-                .value(((orderingPrice1 * 5) - (orderingDiscountPrice1 * 5)) + ((orderingPrice2 * 2) - (orderingDiscountPrice2 * 2))))
+                .value(((orderingPrice1 * 5) - (orderingDiscountPrice1 * 5)) + ((orderingPrice2 * 2)
+                    - (orderingDiscountPrice2 * 2))))
     ;
   }
 
@@ -233,6 +257,7 @@ class OrderRestControllerTest extends BaseIntegrationTest {
     OrderPlaceDto createOrder = createOrderPlaceDto(orderSheetResult);
 
     this.mockMvc.perform(post(OrderRestController.REQUEST_URL)
+            .header(HttpHeaders.AUTHORIZATION, this.getBearerToken(USER_EMAIL, USER_PASSWORD))
             .content(this.objectMapper.writeValueAsString(createOrder))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
@@ -250,7 +275,7 @@ class OrderRestControllerTest extends BaseIntegrationTest {
     Recipient recipient = new Recipient("나받음", "01045674567");
     Address address = new Address("12345", "경기도 광명시 시청로 110", "반포자이 306동 2108호");
     return OrderPlaceDto.builder()
-        .userId(1L)
+        .userId(userId)
         .orderSheetId(orderSheetResult.getId())
         .deliveryInfo(new DeliveryInfo(recipient, address, "집앞에 보관해주세요!"))
         .orderer(new Orderer("나주문", "01012341234", "gumea@naver.com"))
@@ -270,6 +295,7 @@ class OrderRestControllerTest extends BaseIntegrationTest {
     OrderResult orderResult = orderService.place(createOrder);
 
     this.mockMvc.perform(get(OrderRestController.REQUEST_URL + "/{id}", orderResult.getId())
+            .header(HttpHeaders.AUTHORIZATION, this.getBearerToken(USER_EMAIL, USER_PASSWORD))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
@@ -300,20 +326,27 @@ class OrderRestControllerTest extends BaseIntegrationTest {
         .deliveryInfo(new DeliveryInfo(updateRecipient, updateAddress, "배송전 연락주세요"))
         .build();
 
-    this.mockMvc.perform(put(OrderRestController.REQUEST_URL + "/{id}/delivery", orderResult.getId())
-            .content(this.objectMapper.writeValueAsString(updateDeliveryInfo))
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .accept(MediaTypes.HAL_JSON_VALUE))
+    this.mockMvc.perform(
+            put(OrderRestController.REQUEST_URL + "/{id}/delivery", orderResult.getId())
+                .header(HttpHeaders.AUTHORIZATION, this.getBearerToken(USER_EMAIL, USER_PASSWORD))
+                .content(this.objectMapper.writeValueAsString(updateDeliveryInfo))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(
             header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
         .andExpect(jsonPath("$.order").exists())
-        .andExpect(jsonPath("$.order.deliveryInfo.recipient.name").value(updateDeliveryInfo.getDeliveryInfo().getRecipient().getName()))
-        .andExpect(jsonPath("$.order.deliveryInfo.recipient.phone").value(updateDeliveryInfo.getDeliveryInfo().getRecipient().getPhone()))
-        .andExpect(jsonPath("$.order.deliveryInfo.address.zipCode").value(updateDeliveryInfo.getDeliveryInfo().getAddress().getZipCode()))
-        .andExpect(jsonPath("$.order.deliveryInfo.address.address").value(updateDeliveryInfo.getDeliveryInfo().getAddress().getAddress()))
-        .andExpect(jsonPath("$.order.deliveryInfo.address.detailedAddress").value(updateDeliveryInfo.getDeliveryInfo().getAddress().getDetailedAddress()))
+        .andExpect(jsonPath("$.order.deliveryInfo.recipient.name").value(
+            updateDeliveryInfo.getDeliveryInfo().getRecipient().getName()))
+        .andExpect(jsonPath("$.order.deliveryInfo.recipient.phone").value(
+            updateDeliveryInfo.getDeliveryInfo().getRecipient().getPhone()))
+        .andExpect(jsonPath("$.order.deliveryInfo.address.zipCode").value(
+            updateDeliveryInfo.getDeliveryInfo().getAddress().getZipCode()))
+        .andExpect(jsonPath("$.order.deliveryInfo.address.address").value(
+            updateDeliveryInfo.getDeliveryInfo().getAddress().getAddress()))
+        .andExpect(jsonPath("$.order.deliveryInfo.address.detailedAddress").value(
+            updateDeliveryInfo.getDeliveryInfo().getAddress().getDetailedAddress()))
     ;
 
   }
@@ -335,15 +368,17 @@ class OrderRestControllerTest extends BaseIntegrationTest {
         .build();
 
     this.mockMvc.perform(put(OrderRestController.REQUEST_URL + "/purchase-complete")
-        .content(this.objectMapper.writeValueAsString(purchaseCompleteStatus))
-        .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .accept(MediaTypes.HAL_JSON_VALUE))
+            .header(HttpHeaders.AUTHORIZATION, this.getBearerToken(USER_EMAIL, USER_PASSWORD))
+            .content(this.objectMapper.writeValueAsString(purchaseCompleteStatus))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(
             header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE + ";charset=UTF-8"))
         .andExpect(jsonPath("$.order").exists())
-        .andExpect(jsonPath("$.order.orderItems[0].status").value(Status.PURCHASE_COMPLETED.toString()))
+        .andExpect(
+            jsonPath("$.order.orderItems[0].status").value(Status.PURCHASE_COMPLETED.toString()))
         .andExpect(jsonPath("$.order.orderItems[1].status").value(Status.PAID.toString()))
     ;
 
@@ -366,6 +401,7 @@ class OrderRestControllerTest extends BaseIntegrationTest {
         .build();
 
     this.mockMvc.perform(put(OrderRestController.REQUEST_URL + "/cancel-request")
+            .header(HttpHeaders.AUTHORIZATION, this.getBearerToken(USER_EMAIL, USER_PASSWORD))
             .content(this.objectMapper.writeValueAsString(cancelOrderStatus))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))
@@ -397,6 +433,7 @@ class OrderRestControllerTest extends BaseIntegrationTest {
         .build();
 
     this.mockMvc.perform(put(OrderRestController.REQUEST_URL + "/return-request")
+            .header(HttpHeaders.AUTHORIZATION, this.getBearerToken(USER_EMAIL, USER_PASSWORD))
             .content(this.objectMapper.writeValueAsString(returnOrderStatus))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaTypes.HAL_JSON_VALUE))

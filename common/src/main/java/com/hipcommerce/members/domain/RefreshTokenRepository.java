@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, String> {
 
-  Optional<RefreshToken> findByKey(final String key);
+  Optional<RefreshToken> findByTokenKey(final String key);
 
 }
