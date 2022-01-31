@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Schema(description = "AccessToken")
 @JsonInclude(Include.NON_EMPTY)
-정public class TokenDto {
+public class TokenDto {
 
   @JsonProperty("access_token")
   private String accessToken;
@@ -24,9 +24,13 @@ import lombok.NoArgsConstructor;
   @JsonProperty("refresh_token")
   private String refreshToken;
 
-  public TokenDto(TokenDto token) {
-    this.accessToken = token.accessToken;
-    this.refreshToken = token.refreshToken;
+  @JsonProperty("expired_date")
+  private Long expireDate;
+
+  public TokenDto(TokenDto entity) {
+    this.accessToken = entity.getAccessToken();
+    this.refreshToken = entity.getRefreshToken();
+    this.expireDate = entity.getExpireDate();
   }
 
 }

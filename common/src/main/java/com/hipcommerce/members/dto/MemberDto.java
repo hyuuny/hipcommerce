@@ -6,18 +6,23 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.hipcommerce.config.security.model.AccessToken;
+import com.hipcommerce.config.security.model.TokenDto;
+import com.hipcommerce.members.domain.Authority;
 import com.hipcommerce.members.domain.Member;
 import com.hipcommerce.members.domain.Member.Gender;
+import com.hipcommerce.members.domain.Member.Status;
 import com.hipcommerce.members.service.MemberAdapter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.hateoas.server.core.Relation;
 
 public class MemberDto {
@@ -71,12 +76,64 @@ public class MemberDto {
     private Response user;
 
     @Schema(description = "인증토큰", required = true)
-    private AccessToken token;
+    private TokenDto token;
 
-    public UserWithToken(Response user, AccessToken token) {
+    public UserWithToken(Response user, TokenDto token) {
       this.user = user;
       this.token = token;
     }
+
+    public String toUsername() {
+      return user.getUsername();
+    }
+
+    public String toRefreshToken() {
+      return token.getRefreshToken();
+    }
+  }
+
+  @Getter
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Builder
+  @Schema(name = "MemberDto.Update", description = "회원정보 수정")
+  public static class Update {
+
+    @NotNull
+    @Schema(description = "휴대전화", example = "01012341234", required = true)
+    private String mobilePhone;
+
+    @NotNull
+    @Schema(description = "이름", example = "김성현", required = true)
+    private String name;
+
+    @NotNull
+    @Schema(description = "성별", example = "MALE", required = true)
+    private Gender gender;
+
+    public void update(Member entity) {
+      entity.changeMobilePhone(this.mobilePhone);
+      entity.changeName(this.name);
+      entity.changeGender(this.gender);
+    }
+
+  }
+
+  @Getter
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Builder
+  @Schema(name = "MemberDto.ResetPassword", description = "비밀번호 수정")
+  public static class ChangePassword {
+
+    @NotNull
+    @Schema(description = "비밀번호", example = "secret")
+    private String password;
+
+    public void update(Member entity) {
+      entity.changePassword(this.password);
+    }
+
   }
 
   @Getter
@@ -141,6 +198,44 @@ public class MemberDto {
       this.createdDate = entity.getCreatedDate();
       this.lastModifiedDate = entity.getLastModifiedDate();
     }
+
+    public Response(MemberSearchDto entity) {
+      this.id = entity.getId();
+      this.uuid = entity.getUuId();
+      this.username = entity.getUsername();
+      this.email = entity.getEmail();
+      this.mobilePhone = entity.getMobilePhone();
+      this.name = entity.getName();
+      this.gender = entity.toGender();
+      this.createdDate = entity.getCreatedDate();
+      this.lastModifiedDate = entity.getLastModifiedDate();
+    }
   }
+
+  @Setter
+  @Getter
+  @AllArgsConstructor(access = AccessLevel.PRIVATE)
+  @NoArgsConstructor(access = AccessLevel.PRIVATE)
+  @Builder
+  @Schema(description = "회원 상세검색조건")
+  public static class DetailedSearchCondition {
+
+    @Schema(description = "회원상태", example = "ACTIVE", required = false)
+    private Status status;
+
+    @Schema(description = "이메일", example = "shyune@knou.ac.kr", required = false)
+    private String email;
+
+    @Schema(description = "휴대전화", example = "01012341234", required = false)
+    private String mobilePhone;
+
+    @Schema(description = "이름", example = "김성현", required = false)
+    private String name;
+
+    @Schema(description = "성별", example = "MALE", required = false)
+    private Gender gender;
+
+  }
+
 
 }

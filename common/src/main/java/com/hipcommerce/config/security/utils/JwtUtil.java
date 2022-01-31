@@ -3,11 +3,12 @@ package com.hipcommerce.config.security.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
-import com.hipcommerce.config.security.model.TokenDto;
 import com.hipcommerce.config.security.model.AuthenticatedMember;
+import com.hipcommerce.config.security.model.TokenDto;
 import com.hipcommerce.members.service.MemberAdapter;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -42,9 +43,9 @@ public class JwtUtil {
   private String issuer;
 
   @Value("${spring.jwt.expiration.access}")
-  private Duration accessExpiration;
+  private long accessExpiration;
 
-  @Value("${spring.jwt.expiration.access}")
+  @Value("${spring.jwt.expiration.refresh}")
   private Duration refreshExpiration;
 
   private final Key key;
@@ -65,7 +66,7 @@ public class JwtUtil {
     headers.put("typ", "JWT");
     headers.put("alg", "HS256");
 
-    MemberAdapter member = (MemberAdapter) authentication.getPrincipal();
+    MemberAdapter member = (MemberAdapter) authentication.getDetails();
     Map<String, Object> claims = Maps.newHashMap();
     claims.put("user", writeValueAsString(new AuthenticatedMember(member)));
 
@@ -75,13 +76,14 @@ public class JwtUtil {
         .collect(Collectors.joining(","));
 
     // Access Token 생성
+    long now = new Date().getTime();
     String accessToken = Jwts.builder()
         .setHeader(headers)
         .setIssuer(issuer)
-        .setSubject(authentication.getName())       // payload "sub": "name"
-        .claim(AUTHORITIES_KEY, authorities)        // payload "auth": "ROLE_USER"
-        .setExpiration(new DateTime().plus(accessExpiration.toMillis()).toDate())        // payload "exp": 1516239022 (예시)
-        .signWith(key, SignatureAlgorithm.HS512)    // header "alg": "HS512"
+        .setSubject(authentication.getName())
+        .claim(AUTHORITIES_KEY, authorities)
+        .setExpiration(new Date(now + accessExpiration))
+        .signWith(key, SignatureAlgorithm.HS256)
         .setAudience("user")
         .addClaims(claims)
         .compact();
@@ -89,12 +91,13 @@ public class JwtUtil {
     // Refresh Token 생성
     String refreshToken = Jwts.builder()
         .setExpiration(new DateTime().plus(refreshExpiration.toMillis()).toDate())
-        .signWith(key, SignatureAlgorithm.HS512)
+        .signWith(key, SignatureAlgorithm.HS256)
         .compact();
 
     return TokenDto.builder()
         .accessToken(accessToken)
         .refreshToken(refreshToken)
+        .expireDate(accessExpiration)
         .build();
   }
 
@@ -111,16 +114,14 @@ public class JwtUtil {
     Claims claims = parseClaims(accessToken);
 
     if (claims.get(AUTHORITIES_KEY) == null) {
-      throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+      throw new RuntimeException("not authority token");
     }
 
-    // 클레임에서 권한 정보 가져오기
     Collection<? extends GrantedAuthority> authorities =
         Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
             .map(SimpleGrantedAuthority::new)
             .collect(Collectors.toList());
 
-    // UserDetails 객체를 만들어서 Authentication 리턴
     UserDetails principal = new User(claims.getSubject(), "", authorities);
     return new UsernamePasswordAuthenticationToken(principal, null, authorities);
   }
@@ -129,16 +130,10 @@ public class JwtUtil {
     try {
       Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
       return true;
-    } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-      log.info("잘못된 JWT 서명입니다.");
-    } catch (ExpiredJwtException e) {
-      log.info("만료된 JWT 토큰입니다.");
-    } catch (UnsupportedJwtException e) {
-      log.info("지원되지 않는 JWT 토큰입니다.");
-    } catch (IllegalArgumentException e) {
-      log.info("JWT 토큰이 잘못되었습니다.");
+    } catch (JwtException | IllegalArgumentException e) {
+      log.error(e.getMessage());
+      return false;
     }
-    return false;
   }
 
   public Claims parseClaims(final String accessToken) {

@@ -3,20 +3,22 @@ package com.hipcommerce.members.port;
 import com.google.common.collect.Sets;
 import com.hipcommerce.common.exceptions.UserNotFoundException;
 import com.hipcommerce.common.web.model.HttpStatusMessageException;
-import com.hipcommerce.config.security.model.AccessToken;
-import com.hipcommerce.config.security.model.Credential;
-import com.hipcommerce.config.security.provider.TokenProvider;
 import com.hipcommerce.members.domain.Authority;
 import com.hipcommerce.members.domain.Member;
 import com.hipcommerce.members.domain.MemberRepository;
-import com.hipcommerce.members.domain.RefreshToken;
+import com.hipcommerce.members.dto.MemberDto.ChangePassword;
+import com.hipcommerce.members.dto.MemberDto.DetailedSearchCondition;
+import com.hipcommerce.members.dto.MemberDto.Response;
+import com.hipcommerce.members.dto.MemberDto.Update;
+import com.hipcommerce.members.dto.MemberSearchDto;
+import java.util.List;
 import java.util.Set;
-import javax.transaction.Transactional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -26,9 +28,6 @@ public class MemberPort {
 
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder;
-  private final AuthenticationManagerBuilder authenticationManagerBuilder;
-  private final TokenProvider tokenProvider;
-  private final AuthPort authPort;
 
   public Member signUp(Member newMember) {
     return signUp(newMember, Sets.newHashSet(Authority.USER));
@@ -49,28 +48,37 @@ public class MemberPort {
     );
   }
 
-  @Transactional
-  public AccessToken login(Credential credential) {
-    // 1. Login ID/PW 를 기반으로 AuthenticationToken 생성
-    UsernamePasswordAuthenticationToken authenticationToken = credential.toAuthentication();
+  public Page<Response> retrieveMember(DetailedSearchCondition searchCondition, Pageable pageable) {
+    Page<MemberSearchDto> pages = memberRepository.retrieveMember(searchCondition, pageable);
+    List<Response> members = toResponses(pages);
+    return new PageImpl<>(members, pageable, pages.getTotalElements());
+  }
 
-    // 2. 실제로 검증 (사용자 비밀번호 체크) 이 이루어지는 부분
-    //    authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
-    Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+  private List<Response> toResponses(Page<MemberSearchDto> pages) {
+    return pages.getContent().stream()
+        .map(Response::new)
+        .collect(Collectors.toList());
+  }
 
-    // 3. 인증 정보를 기반으로 JWT 토큰 생성
-    AccessToken accessToken = tokenProvider.generateToken(authentication);
+  private String passwordEncode(final String password) {
+    return passwordEncoder.encode(password);
+  }
 
-    // 4. RefreshToken 저장
-    RefreshToken refreshToken = RefreshToken.builder()
-        .key(authentication.getName())
-        .value(accessToken.getRefreshToken())
-        .build();
+  public Long changePassword(final Long id, ChangePassword dto) {
+    Member existingMember = getMember(id);
+    existingMember.changePassword(passwordEncode(dto.getPassword()));
+    return existingMember.getId();
+  }
 
-    authPort.save(refreshToken);
+  public Member updateMember(final Long id, Update dto) {
+    Member existingMember = getMember(id);
+    dto.update(existingMember);
+    return existingMember;
+  }
 
-    // 5. 토큰 발급
-    return accessToken;
+  public void leave(final Long id) {
+    Member existingMember = getMember(id);
+    existingMember.leave();
   }
 
 }

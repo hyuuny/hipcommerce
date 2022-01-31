@@ -3,18 +3,16 @@ package com.hipcommerce.members.port;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 import com.hipcommerce.common.web.model.HttpStatusMessageException;
-import com.hipcommerce.config.security.model.Credential;
 import com.hipcommerce.config.security.model.TokenDto;
 import com.hipcommerce.config.security.utils.JwtUtil;
 import com.hipcommerce.members.domain.RefreshToken;
 import com.hipcommerce.members.domain.RefreshTokenRepository;
+import com.hipcommerce.members.dto.MemberDto.UserWithToken;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,29 +23,15 @@ public class AuthPort {
 
   private final RefreshTokenRepository refreshTokenRepository;
   private final JwtUtil jwtUtil;
-  private final AuthenticationManagerBuilder managerBuilder;
   private final RedisTemplate redisTemplate;
 
-  public RefreshToken save(RefreshToken entity) {
-    return refreshTokenRepository.save(entity);
-  }
-
   @Transactional
-  public TokenDto login(Credential credential) {
-    UsernamePasswordAuthenticationToken authenticationToken = credential.toAuthentication();
-    Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
-    TokenDto newToken = jwtUtil.generateToken(authentication);
-    generate(authentication.getName(), newToken.getRefreshToken());
-    return newToken;
+  public void login(UserWithToken userWithToken) {
+    generate(userWithToken.toUsername(), userWithToken.toRefreshToken());
   }
 
   private void generate(final String key, final String value) {
-    save(RefreshToken.builder().tokenKey(key).tokenValue(value).build());
-    saveRedisToken(key, value);
-  }
-
-  private void saveRedisToken(final String name, final String refreshToken) {
-    redisTemplate.opsForValue().set(name, refreshToken);
+    redisTemplate.opsForValue().set(key, value);
   }
 
   @Transactional
@@ -60,10 +44,9 @@ public class AuthPort {
     RefreshToken refreshToken = getRefreshToken(authentication.getName());
     verifyRefreshToken(dto.getRefreshToken(), refreshToken.getTokenValue());
     TokenDto newToken = jwtUtil.generateToken(authentication);
-    save(refreshToken.updateValue(newToken.getRefreshToken()));
-    saveRedisToken(authentication.getName(), newToken.getRefreshToken());
+    refreshTokenRepository.save(refreshToken.updateValue(newToken.getRefreshToken()));
+    redisTemplate.opsForValue().set(authentication.getName(), newToken.getRefreshToken());
 
-    // 토큰 발급
     return newToken;
   }
 
@@ -73,7 +56,7 @@ public class AuthPort {
     }
   }
 
-  public RefreshToken getRefreshToken(String key) {
+  public RefreshToken getRefreshToken(final String key) {
     return refreshTokenRepository.findByTokenKey(key).orElseThrow(
         () -> new HttpStatusMessageException(HttpStatus.BAD_REQUEST, "member.logout.complete"));
   }

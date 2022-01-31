@@ -34,6 +34,15 @@ public class DummyData {
         .gender(Gender.MALE);
   }
 
+  public static SignUpRequest.SignUpRequestBuilder aSignUp() {
+    return SignUpRequest.builder()
+        .email("shyune@knou.ac.kr")
+        .password("12341234")
+        .mobilePhone("01012341234")
+        .name("김성현")
+        .gender(Gender.MALE);
+  }
+
   public static CategoryDto.Create.CreateBuilder aCategory() {
     return CategoryDto.Create.builder()
         .name("아우터")

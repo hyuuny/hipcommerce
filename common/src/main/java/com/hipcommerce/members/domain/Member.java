@@ -12,6 +12,7 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -26,12 +27,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 public class Member{
 
@@ -99,43 +102,6 @@ public class Member{
   @LastModifiedDate
   private LocalDateTime lastModifiedDate;
 
-//  public Collection<? extends GrantedAuthority> getAuthorities() {
-//    return this.authorities.stream()
-//        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
-//        .collect(Collectors.toSet());
-//  }
-
-
-//  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//  @Override
-//  public String getUsername() {
-//    return this.email;
-//  }
-//
-//  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//  @Override
-//  public boolean isAccountNonExpired() {
-//    return true;
-//  }
-//
-//  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//  @Override
-//  public boolean isAccountNonLocked() {
-//    return true;
-//  }
-//
-//  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//  @Override
-//  public boolean isCredentialsNonExpired() {
-//    return true;
-//  }
-//
-//  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-//  @Override
-//  public boolean isEnabled() {
-//    return true;
-//  }
-
   public boolean isEnabled() {
     return true;
   }
@@ -169,6 +135,26 @@ public class Member{
 
   public String toGender() {
     return this.gender.toString();
+  }
+
+  public void changePassword(final String password) {
+    this.password = password;
+  }
+
+  public void changeMobilePhone(final String mobilePhone) {
+    this.mobilePhone = mobilePhone;
+  }
+
+  public void changeName(final String name) {
+    this.name = name;
+  }
+
+  public void changeGender(final Gender gender) {
+    this.gender = gender;
+  }
+
+  public void leave() {
+    this.status = Status.LEAVE;
   }
 
 }

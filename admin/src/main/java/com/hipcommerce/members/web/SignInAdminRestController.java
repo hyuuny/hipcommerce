@@ -17,14 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
-public class SignInRestController {
+public class SignInAdminRestController {
 
   private final AuthService authService;
 
   @Operation(summary = "로그인")
   @PostMapping("/auth")
   public ResponseEntity<UserWithToken> signIn(@RequestBody Credential credential) {
-    return null;
+    UserWithToken loginInfo = authService.signIn(credential);
+    return ResponseEntity.ok(loginInfo);
   }
 
 }

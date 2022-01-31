@@ -2,11 +2,37 @@ package com.hipcommerce;
 
 import com.google.common.collect.Lists;
 import com.hipcommerce.categories.dto.CategoryDto;
+import com.hipcommerce.members.domain.Member.Gender;
+import com.hipcommerce.members.dto.MemberDto.SignUpRequest;
 import com.hipcommerce.product.domain.Product.Status;
 import com.hipcommerce.product.dto.ProductDto;
 import com.hipcommerce.product.dto.ProductOptionDto.Create;
 
 public class DummyData {
+
+  public static final String USER_EMAIL = "user@naver.com";
+  public static final String USER_PASSWORD = "aa123456";
+
+  public static final String ADMIN_EMAIL = "admin";
+  public static final String ADMIN_PASSWORD = "aa123123";
+
+  public static SignUpRequest.SignUpRequestBuilder anAdmin() {
+    return SignUpRequest.builder()
+        .email(ADMIN_EMAIL)
+        .password(ADMIN_PASSWORD)
+        .name("관리자")
+        .mobilePhone("01012341234")
+        .gender(Gender.MALE);
+  }
+
+  public static SignUpRequest.SignUpRequestBuilder anUser() {
+    return SignUpRequest.builder()
+        .email(USER_EMAIL)
+        .password(USER_PASSWORD)
+        .name("회원")
+        .mobilePhone("01045674567")
+        .gender(Gender.MALE);
+  }
 
   public static CategoryDto.Create.CreateBuilder aCategory() {
     return CategoryDto.Create.builder()
