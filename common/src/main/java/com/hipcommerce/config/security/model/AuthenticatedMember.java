@@ -38,6 +38,8 @@ public class AuthenticatedMember {
 
   private LocalDateTime createdDate;
 
+  private LocalDateTime lastModifiedDate;
+
   private List<String> authorities;
 
   public AuthenticatedMember(MemberAdapter member) {
@@ -49,25 +51,28 @@ public class AuthenticatedMember {
     this.gender = member.getGender();
     this.status = member.getStatus();
     this.createdDate = member.getCreatedDate();
+    this.lastModifiedDate = member.getLastModifiedDate();
     this.authorities = member.getAuthorities().stream()
-      .map(GrantedAuthority::getAuthority)
-      .collect(Collectors.toList());
+        .map(GrantedAuthority::getAuthority)
+        .collect(Collectors.toList());
   }
 
-  public MemberAdapter toUser() {
+  public MemberAdapter toMember() {
     Member member = Member.builder()
-      .id(this.userId)
-      .username(this.username)
-      .email(this.email)
-      .mobilePhone(this.mobilePhone)
-      .name(this.name)
-      .gender(this.gender)
-      .status(this.status)
-      .build();
+        .id(this.userId)
+        .username(this.username)
+        .email(this.email)
+        .mobilePhone(this.mobilePhone)
+        .name(this.name)
+        .gender(this.gender)
+        .status(this.status)
+        .createdDate(this.createdDate)
+        .lastModifiedDate(this.lastModifiedDate)
+        .build();
 
     List<SimpleGrantedAuthority> authorities = this.authorities.stream()
-      .map(SimpleGrantedAuthority::new)
-      .collect(Collectors.toList());
+        .map(SimpleGrantedAuthority::new)
+        .collect(Collectors.toList());
 
     return new MemberAdapter(member, authorities);
   }

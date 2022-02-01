@@ -99,6 +99,13 @@ public class ProductAdminRestController {
     return ResponseEntity.noContent().build();
   }
 
+  @Operation(summary = "상품 캐시 초기화")
+  @DeleteMapping("/caches")
+  public ResponseEntity<?> cacheEvict() {
+    productService.evictCaches();
+    return ResponseEntity.noContent().build();
+  }
+
   @Component
   static class ProductResourceAssembler implements
       RepresentationModelAssembler<Response, EntityModel<Response>> {

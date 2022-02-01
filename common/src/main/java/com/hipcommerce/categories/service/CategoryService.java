@@ -8,6 +8,9 @@ import com.hipcommerce.categories.dto.CategoryDto.Update;
 import com.hipcommerce.categories.port.CategoryPort;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ public class CategoryService {
 
   private final CategoryPort categoryPort;
 
+  @CacheEvict(value = "categoriesCache", allEntries = true)
   @Transactional
   public Response createCategoryAndGet(Create dto) {
     Long savedCategoryId = createCategory(dto);
@@ -32,6 +36,7 @@ public class CategoryService {
     return categoryPort.save(dto).getId();
   }
 
+  @CacheEvict(value = "categoriesCache", allEntries = true)
   @Transactional
   public Response createChildCategory(final Long parentCategoryId, Create dto) {
     Category parentCategory = categoryPort.getCategory(parentCategoryId);
@@ -45,6 +50,7 @@ public class CategoryService {
     return new Response(foundCategory);
   }
 
+  @Cacheable(value = "categoriesCahce", unless = "#result.size() == 0")
   public List<Response> getAllCategories() {
     List<Category> categories = categoryPort.getCategories();
     return categoryPort.toResponses(categories);
@@ -56,6 +62,7 @@ public class CategoryService {
     return categoryPort.toResponses(childCategories);
   }
 
+
   public Page<Response> retrieveCategory(
       DetailedSearchCondition searchCondition,
       Pageable pageable
@@ -64,15 +71,25 @@ public class CategoryService {
     return categories;
   }
 
+  @CacheEvict(value = "categoriesCache", allEntries = true)
   @Transactional
   public Response updateCategory(final Long id, Update dto) {
     Category updatedCategory = categoryPort.updateCategory(id, dto);
     return new Response(updatedCategory);
   }
 
+  @CacheEvict(value = "categoriesCache", allEntries = true)
   @Transactional
   public void deleteCategory(final Long id) {
     categoryPort.delete(id);
+  }
+
+  @Caching(
+      evict = {
+          @CacheEvict(value = "categoriesCache", allEntries = true)
+      }
+  )
+  public void evictCaches() {
   }
 
 

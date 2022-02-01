@@ -6,7 +6,6 @@ import com.hipcommerce.config.security.model.Credential;
 import com.hipcommerce.config.security.service.AuthenticationService;
 import com.hipcommerce.members.dto.MemberDto.Response;
 import com.hipcommerce.members.dto.MemberDto.UserWithToken;
-import com.hipcommerce.members.port.AuthPort;
 import com.hipcommerce.members.service.MemberAdapter;
 import java.io.IOException;
 import java.util.Optional;
@@ -29,18 +28,15 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
   private final AuthenticationService authenticationService;
   private final ObjectMapper objectMapper;
-  private final AuthPort authPort;
 
   public JwtAuthenticationFilter(
       String defaultFilterProcessesUrl,
       AuthenticationService authenticationService,
-      ObjectMapper objectMapper,
-      AuthPort authPort
+      ObjectMapper objectMapper
   ) {
     super(defaultFilterProcessesUrl);
     this.authenticationService = authenticationService;
     this.objectMapper = objectMapper;
-    this.authPort = authPort;
   }
 
   @Override
@@ -83,7 +79,6 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
       UserWithToken userWithToken = new UserWithToken(new Response(member),
           authenticationService.generateAccessToken(authentication));
       responseWrite(response, userWithToken);
-      authPort.login(userWithToken);
     } catch (Exception e) {
       log.error("cannot create sign in data: {}", e);
       throw new AuthenticationServiceException(e.getMessage());

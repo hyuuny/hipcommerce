@@ -1,8 +1,10 @@
 package com.hipcommerce.config.security.service;
 
-import com.hipcommerce.config.security.model.TokenDto;
+import com.hipcommerce.config.security.model.AccessToken;
 import com.hipcommerce.config.security.utils.JwtUtil;
 import com.hipcommerce.members.service.MemberAdapter;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -24,8 +26,13 @@ public class AuthenticationService {
     }
   }
 
-  public TokenDto generateAccessToken(Authentication authentication) {
-    return new TokenDto(jwtUtil.generateToken(authentication));
+  public AccessToken generateAccessToken(Authentication authentication) {
+    return new AccessToken(jwtUtil.generateToken(authentication));
+  }
+
+  public Claims verifyAccessToken(final String accessToken) {
+    Jws<Claims> claimsJws = jwtUtil.verifyAccessToken(accessToken);
+    return claimsJws.getBody();
   }
 
 }

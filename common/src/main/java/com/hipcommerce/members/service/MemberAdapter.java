@@ -24,17 +24,17 @@ public class MemberAdapter extends User {
   }
 
   public MemberAdapter(
-    Member member,
-    Collection<? extends GrantedAuthority> authorities
+      Member member,
+      Collection<? extends GrantedAuthority> authorities
   ) {
     super(
-      member.getUsername(),
+        member.getUsername(),
         isEmpty(member.getPassword()) ? UUID.randomUUID().toString() : member.getPassword(),
-      member.isEnabled(),
-      member.isAccountNonExpired(),
-      member.isCredentialsNonExpired(),
-      member.isAccountNonLocked(),
-      authorities
+        member.isEnabled(),
+        member.isAccountNonExpired(),
+        member.isCredentialsNonExpired(),
+        member.isAccountNonLocked(),
+        authorities
     );
     this.member = member;
   }
@@ -42,7 +42,7 @@ public class MemberAdapter extends User {
   private static Collection<? extends GrantedAuthority> authorities(Set<Authority> roles) {
     return roles.stream()
         .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
-      .collect(Collectors.toSet());
+        .collect(Collectors.toSet());
   }
 
   public Long getUserId() {

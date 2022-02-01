@@ -1,7 +1,6 @@
 package com.hipcommerce.members.web;
 
 import com.hipcommerce.config.security.model.Credential;
-import com.hipcommerce.config.security.service.AuthService;
 import com.hipcommerce.members.dto.MemberDto.UserWithToken;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,13 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(produces = MediaTypes.HAL_JSON_VALUE)
 public class SignInAdminRestController {
 
-  private final AuthService authService;
-
   @Operation(summary = "로그인")
   @PostMapping("/auth")
-  public ResponseEntity<UserWithToken> signIn(@RequestBody Credential credential) {
-    UserWithToken loginInfo = authService.signIn(credential);
-    return ResponseEntity.ok(loginInfo);
+  public ResponseEntity<?> signIn(@RequestBody Credential credential) {
+    return ResponseEntity.noContent().build();
   }
 
 }

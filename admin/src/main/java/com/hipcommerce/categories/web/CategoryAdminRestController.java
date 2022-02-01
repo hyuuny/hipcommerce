@@ -129,6 +129,13 @@ public class CategoryAdminRestController {
     return ResponseEntity.noContent().build();
   }
 
+  @Operation(summary = "카테고리 캐시 초기화")
+  @DeleteMapping("/caches")
+  public ResponseEntity<?> cacheEvict() {
+    categoryService.evictCaches();
+    return ResponseEntity.noContent().build();
+  }
+
 
   @Component
   static class CategoryResourceAssembler implements

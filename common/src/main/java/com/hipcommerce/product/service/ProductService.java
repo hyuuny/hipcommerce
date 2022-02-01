@@ -80,4 +80,13 @@ public class ProductService {
     productPort.deleteProduct(id);
   }
 
+  @Caching(
+      evict = {
+          @CacheEvict(value = "productCache", allEntries = true),
+          @CacheEvict(value = "searchProductCache", allEntries = true)
+      }
+  )
+  public void evictCaches() {
+  }
+
 }

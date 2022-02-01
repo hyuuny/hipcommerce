@@ -34,8 +34,16 @@ public class MemberPort {
   }
 
   public Member signUp(Member newMember, Set<Authority> authority) {
+    verifySignUp(newMember.getEmail());
     newMember.signUp(authority, passwordEncoder);
     return memberRepository.save(newMember);
+  }
+
+  private void verifySignUp(final String email) {
+    memberRepository.findByEmail(email).ifPresent(member -> {
+      throw new HttpStatusMessageException(HttpStatus.BAD_REQUEST, "member.email.duplicate",
+          member.getEmail());
+    });
   }
 
   public Member getMember(final Long id) {

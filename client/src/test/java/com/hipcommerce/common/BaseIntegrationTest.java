@@ -68,9 +68,8 @@ public abstract class BaseIntegrationTest {
             .content(this.objectMapper.writeValueAsString(credential)));
 
     String responseBody = perform.andReturn().getResponse().getContentAsString();
-    String accessToken = objectMapper.readValue(responseBody, UserWithToken.class).getToken()
+    return objectMapper.readValue(responseBody, UserWithToken.class).getToken()
         .getAccessToken();
-    return accessToken;
   }
 
   protected void flushWithClearEntityContext() {

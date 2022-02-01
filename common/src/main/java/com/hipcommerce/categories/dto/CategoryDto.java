@@ -2,6 +2,10 @@ package com.hipcommerce.categories.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.hipcommerce.categories.domain.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
@@ -116,9 +120,13 @@ public class CategoryDto {
     @Schema(description = "부모 카테고리 아이디", required = false)
     private Long parentCategoryId;
 
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @Schema(description = "등록일", example = "2022-01-11T13:16:32.139065", required = false)
     private LocalDateTime createdDate;
 
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @Schema(description = "수정일", example = "2022-01-12T15:42:06.139065", required = false)
     private LocalDateTime lastModifiedDate;
 

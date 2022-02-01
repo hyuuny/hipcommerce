@@ -7,8 +7,6 @@ import com.hipcommerce.config.security.handler.JwtAccessDeniedHandler;
 import com.hipcommerce.config.security.handler.JwtAuthenticationEntryPoint;
 import com.hipcommerce.config.security.provider.JwtAuthenticationProvider;
 import com.hipcommerce.config.security.service.AuthenticationService;
-import com.hipcommerce.config.security.utils.JwtUtil;
-import com.hipcommerce.members.port.AuthPort;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,10 +29,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private static final String AUTHENTICATION_URL = "/auth";
 
   private final JwtAuthenticationProvider jwtAuthenticationProvider;
-  private final JwtUtil jwtUtil;
   private final AuthenticationService authenticationService;
   private final ObjectMapper objectMapper;
-  private final AuthPort authPort;
 
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -101,13 +97,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   private JwtAuthenticationFilter buildJwtAuthenticationFilter()
       throws Exception {
     JwtAuthenticationFilter filter =
-        new JwtAuthenticationFilter(AUTHENTICATION_URL, authenticationService, objectMapper, authPort);
+        new JwtAuthenticationFilter(AUTHENTICATION_URL, authenticationService, objectMapper);
     filter.setAuthenticationManager(this.authenticationManager());
     return filter;
   }
 
   private JwtAuthorizationFilter buildJwtAuthorizationFilter() {
-    return new JwtAuthorizationFilter(jwtUtil, objectMapper);
+    return new JwtAuthorizationFilter(authenticationService, objectMapper);
   }
 
 }

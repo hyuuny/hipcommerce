@@ -4,8 +4,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import com.hipcommerce.config.security.annotations.CurrentUserId;
-import com.hipcommerce.config.security.model.TokenDto;
-import com.hipcommerce.config.security.service.AuthService;
 import com.hipcommerce.members.dto.MemberDto.ChangePassword;
 import com.hipcommerce.members.dto.MemberDto.Response;
 import com.hipcommerce.members.dto.MemberDto.SignUpRequest;
@@ -44,7 +42,6 @@ public class MemberRestController {
 
   private final MemberSignUpService memberSignUpService;
   private final MemberService memberService;
-  private final AuthService authService;
   private final MemberResourceAssembler memberResourceAssembler;
 
   @Operation(summary = "회원가입")
@@ -71,20 +68,6 @@ public class MemberRestController {
   ) {
     Response existingMember = memberService.getMember(currentUserId);
     return ResponseEntity.ok(memberResourceAssembler.toModel(existingMember));
-  }
-
-  @Operation(summary = "리프레시 토큰 발급")
-  @PostMapping("/reissue")
-  public ResponseEntity<TokenDto> reissue(@RequestBody TokenDto dto) {
-    TokenDto tokenDto = authService.reissue(dto);
-    return ResponseEntity.ok(tokenDto);
-  }
-
-  @Operation(summary = "로그아웃")
-  @PostMapping("/logout")
-  public ResponseEntity<?> logout(@RequestBody TokenDto dto) {
-    authService.logout(dto);
-    return ResponseEntity.noContent().build();
   }
 
   @Operation(summary = "비밀번호 변경")

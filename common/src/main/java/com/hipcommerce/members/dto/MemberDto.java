@@ -6,15 +6,13 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.hipcommerce.config.security.model.TokenDto;
-import com.hipcommerce.members.domain.Authority;
+import com.hipcommerce.config.security.model.AccessToken;
 import com.hipcommerce.members.domain.Member;
 import com.hipcommerce.members.domain.Member.Gender;
 import com.hipcommerce.members.domain.Member.Status;
 import com.hipcommerce.members.service.MemberAdapter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
-import java.util.Set;
 import java.util.UUID;
 import javax.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -76,20 +74,13 @@ public class MemberDto {
     private Response user;
 
     @Schema(description = "인증토큰", required = true)
-    private TokenDto token;
+    private AccessToken token;
 
-    public UserWithToken(Response user, TokenDto token) {
+    public UserWithToken(Response user, AccessToken token) {
       this.user = user;
       this.token = token;
     }
 
-    public String toUsername() {
-      return user.getUsername();
-    }
-
-    public String toRefreshToken() {
-      return token.getRefreshToken();
-    }
   }
 
   @Getter

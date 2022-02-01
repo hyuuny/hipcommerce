@@ -1,9 +1,9 @@
 package com.hipcommerce.members.web;
 
 import static com.hipcommerce.DummyData.aSignUp;
+import static java.util.Objects.requireNonNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -12,20 +12,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.hipcommerce.common.BaseIntegrationTest;
 import com.hipcommerce.config.security.model.Credential;
-import com.hipcommerce.config.security.model.TokenDto;
-import com.hipcommerce.config.security.service.AuthService;
 import com.hipcommerce.members.domain.Member.Gender;
 import com.hipcommerce.members.domain.MemberRepository;
-import com.hipcommerce.members.domain.RefreshToken;
-import com.hipcommerce.members.domain.RefreshTokenRepository;
 import com.hipcommerce.members.dto.MemberDto.ChangePassword;
 import com.hipcommerce.members.dto.MemberDto.SignUpRequest;
 import com.hipcommerce.members.dto.MemberDto.Update;
-import com.hipcommerce.members.dto.MemberDto.UserWithToken;
-import com.hipcommerce.members.service.MemberService;
 import com.hipcommerce.members.service.MemberSignUpService;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,15 +37,6 @@ class MemberRestControllerTest extends BaseIntegrationTest {
 
   @Autowired
   private MemberSignUpService memberSignUpService;
-
-  @Autowired
-  private MemberService memberService;
-
-  @Autowired
-  private AuthService authService;
-
-  @Autowired
-  private RefreshTokenRepository refreshTokenRepository;
 
   @BeforeEach
   void setUp() {
@@ -75,6 +60,30 @@ class MemberRestControllerTest extends BaseIntegrationTest {
         .andDo(print())
         .andExpect(status().isCreated())
     ;
+  }
+
+  @DisplayName("회원가입 시에 중복 이메일 예외")
+  @Test
+  void duplicateEmailEx() throws Exception {
+    SignUpRequest signUpRequest = aSignUp().build();
+    memberSignUpService.signUp(signUpRequest);
+
+    SignUpRequest duplMember = SignUpRequest.builder()
+        .email(signUpRequest.getEmail())
+        .password("45615132")
+        .mobilePhone("0108462486")
+        .name("나가입")
+        .gender(Gender.MALE)
+        .build();
+
+    this.mockMvc.perform(post(MemberRestController.REQUEST_URL)
+            .content(this.objectMapper.writeValueAsString(duplMember))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaTypes.HAL_JSON_VALUE))
+        .andDo(print())
+        .andExpect(result -> Assertions.assertThat("member.email.duplicate")
+            .isEqualTo(requireNonNull(result.getResolvedException().getMessage()))
+        );
   }
 
   @DisplayName("회원 정보 조회")
@@ -186,7 +195,7 @@ class MemberRestControllerTest extends BaseIntegrationTest {
         .andExpect(jsonPath("$.name").value(update.getName()))
         .andExpect(jsonPath("$.gender").exists())
         .andExpect(jsonPath("$.gender").value(update.getGender().toString()))
-        ;
+    ;
   }
 
   @DisplayName("회원탈퇴")
@@ -196,12 +205,12 @@ class MemberRestControllerTest extends BaseIntegrationTest {
     Long signedId = memberSignUpService.signUp(signUpRequest);
 
     this.mockMvc.perform(delete(MemberRestController.REQUEST_URL + "/{id}", signedId)
-        .header(HttpHeaders.AUTHORIZATION,
-            getBearerToken(signUpRequest.getEmail(), signUpRequest.getPassword()))
+            .header(HttpHeaders.AUTHORIZATION,
+                getBearerToken(signUpRequest.getEmail(), signUpRequest.getPassword()))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaTypes.HAL_JSON_VALUE))
         .andDo(print())
         .andExpect(status().isNoContent())
-        ;
+    ;
   }
 }
