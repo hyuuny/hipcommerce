@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Secured("ROLE_ADMIN")
-@Tag(name = "상품 API")
+@Tag(name = "회원 API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(path = MemberAdminRestController.REQUEST_URL, produces = MediaTypes.HAL_JSON_VALUE)

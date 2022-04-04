@@ -50,7 +50,7 @@ public class CategoryService {
     return new Response(foundCategory);
   }
 
-  @Cacheable(value = "categoriesCahce", unless = "#result.size() == 0")
+  @Cacheable(value = "categoriesCache", unless = "#result.size() == 0")
   public List<Response> getAllCategories() {
     List<Category> categories = categoryPort.getCategories();
     return categoryPort.toResponses(categories);
