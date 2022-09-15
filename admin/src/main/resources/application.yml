@@ -29,10 +29,10 @@ spring:
     activate:
       on-profile: dev
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/hipcommerce?serverTimezone=UTC&characterEncoding=UTF-8
+    url: jdbc:mysql://localhost:3310/hipcommerce?serverTimezone=UTC&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: hipper
-    password: hipper
+    password: 1234
   jpa:
     show-sql: false
     hibernate:
