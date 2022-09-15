@@ -4,8 +4,26 @@ services:
   redis:
     image: redis:latest
     restart: always
-    container_name: redis
+    container_name: hipcommerce_redis
     ports:
       - 6379:6379
     volumes:
       - ~/docker-volumes/redis/data:/data
+
+  mysql:
+    container_name: hipcommerce_mysql
+    image: mysql/mysql-server:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_USER: 'hipper'
+      MYSQL_PASSWORD: 1234
+      MYSQL_DATABASE: 'hipcommerce'
+    ports:
+      - "3310:3306"
+    command:
+      - "mysqld"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+    volumes:
+      - ~/docker-volumes/mysql/data:/data
