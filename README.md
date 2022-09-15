@@ -65,27 +65,27 @@ docker compose up -d
 
 - 관리자
 
-| <div style="width:200px"> Method | <div style="width:300px">           URI | <div style="width:290px"> Description |
-|:--------------------------------:|:---------------------------------------:|:-------------------------------------:|
-|               GET                |            /api/v1/products             |             카테고리 조회 및 검색              |
-|               GET                |            /api/v1/products             |              카테고리 전체 조회               |
-|               GET                |          /api/v1/products/{id}          |              자녀 카테고리 조회               |
-|               POST               |          /api/v1/products/{id}          |                카테고리 등록                |
-|               POST               |          /api/v1/products/{id}          |              자녀 카테고리 등록               |
-|               GET                |         /api/v1/products/caches         |              카테고리 상세 조회               |
-|               PUT                |         /api/v1/products/caches         |                카테고리 수정                |
-|              DELETE              |         /api/v1/products/caches         |                카테고리 삭제                |
-|              DELETE              |         /api/v1/products/caches         |              카테고리 캐시 초기화              |
+| <div style="width:200px"> **Method** | <div style="width:300px">           **URI** | <div style="width:290px"> **Description** |
+|:------------------------------------:|:-------------------------------------------:|:-----------------------------------------:|
+|                 GET                  |              /api/v1/products               |               카테고리 조회 및 검색                |
+|                 GET                  |              /api/v1/products               |                카테고리 전체 조회                 |
+|                 GET                  |            /api/v1/products/{id}            |                자녀 카테고리 조회                 |
+|                 POST                 |            /api/v1/products/{id}            |                  카테고리 등록                  |
+|                 POST                 |            /api/v1/products/{id}            |                자녀 카테고리 등록                 |
+|                 GET                  |           /api/v1/products/caches           |                카테고리 상세 조회                 |
+|                 PUT                  |           /api/v1/products/caches           |                  카테고리 수정                  |
+|                DELETE                |           /api/v1/products/caches           |                  카테고리 삭제                  |
+|                DELETE                |           /api/v1/products/caches           |                카테고리 캐시 초기화                |
 
 <br>
 
 - 사용자
 
-| <div style="width:200px"> Method | <div style="width:300px">           URI | <div style="width:290px"> Description |
-|:---------------------------------------:|:---------------------------------------:|:-------------------------------------:|
-|               GET                |            api/v1/categories            |              카테고리 전체 조회               |
-|               GET                |     api/v1/categories/{id}/children     |              자녀 카테고리 조회               |
-|               GET                |         api/v1/categories/{id}          |              카테고리 상세 조회               |
+| <div style="width:200px"> **Method** | <div style="width:300px">           **URI** | <div style="width:290px"> **Description** |
+|:------------------------------------:|:-------------------------------------------:|:-----------------------------------------:|
+|                 GET                  |              api/v1/categories              |                카테고리 전체 조회                 |
+|                 GET                  |       api/v1/categories/{id}/children       |                자녀 카테고리 조회                 |
+|                 GET                  |           api/v1/categories/{id}            |                카테고리 상세 조회                 |
 
 <br>
 
@@ -93,7 +93,7 @@ docker compose up -d
 
 - 관리자
 
-| <div style="width:200px"> Method | <div style="width:300px">           URI | <div style="width:290px"> Description |
+| <div style="width:200px"> **Method** | <div style="width:300px">           **URI** | <div style="width:290px"> **Description** |
 |:--------------------------------:|:---------------------------------------:|:-------------------------------------:|
 |               GET                |            /api/v1/products             |              상품 조회 및 검색               |
 |               POST               |            /api/v1/products             |                 상품 등록                 |
@@ -106,7 +106,7 @@ docker compose up -d
 
 - 사용자
 
-| <div style="width:200px"> Method | <div style="width:300px">           URI | <div style="width:290px"> Description |
+| <div style="width:200px"> **Method** | <div style="width:300px">           **URI** | <div style="width:290px"> **Description** |
 |:---------------------------------------:|:-------------------------------------:|:------------------------------:|
 |               GET                |            /api/v1/products             |              상품 조회 및 검색          |
 |               GET                |          /api/v1/products/{id}          |               상품 상세 조회            |
@@ -117,7 +117,7 @@ docker compose up -d
 
 - 관리자
 
-| <div style="width:200px"> Method |  <div style="width:300px">           URI   | <div style="width:290px"> Description |
+| <div style="width:200px"> **Method** | <div style="width:300px">           **URI** | <div style="width:290px"> **Description** |
 |:--------------------------------:|:------------------------------------------:|:-------------------------------------:|
 |               GET                | /api/v1/orders/ordering-products/checkout  |              주문 조회 및 검색               |
 |               GET                | /api/v1/orders/order-sheets/{orderSheetId} |               주문 상세 조회                |
@@ -128,7 +128,7 @@ docker compose up -d
 
 - 사용자
 
-| <div style="width:200px"> Method |  <div style="width:300px">           URI   | <div style="width:290px"> Description |
+| <div style="width:200px"> **Method** | <div style="width:300px">           **URI** | <div style="width:290px"> **Description** |
 |:--------------------------------:|:------------------------------------------:|:-------------------------------------:|
 |               POST               | /api/v1/orders/ordering-products/checkout  |                주문서 생성                 |
 |               GET                | /api/v1/orders/order-sheets/{orderSheetId} |                주문서 조회                 |
@@ -145,7 +145,7 @@ docker compose up -d
 
 - 사용자
 
-| <div style="width:200px"> Method | <div style="width:300px">           URI | <div style="width:290px"> Description |
+| <div style="width:200px"> **Method** | <div style="width:300px">           **URI** | <div style="width:290px"> **Description** |
 |:--------------------------------:|:---------------------------------------:|:-------------------------------------:|
 |               POST               |        /api/v1/payments/request         |                  결제                   |
 |               GET                |          /api/v1/payments/{id}          |              결제 내역 상세 조회              |
@@ -156,9 +156,9 @@ docker compose up -d
 
 - 관리자
 
-| <div style="width:200px"> Method | <div style="width:300px">           URI | <div style="width:290px"> Description |
+| <div style="width:200px"> **Method** | <div style="width:300px">           **URI** | <div style="width:290px"> **Description** |
 |:--------------------------------:|:---------------------------------------:|:-------------------------------------:|
-|               POST               |          /api/v1/members/auth           |                  로그인                  |
+|               POST               |          /auth           |                  로그인                  |
 |               GET                |             /api/v1/members             |              회원 조회 및 검색               |
 |               GET                |          /api/v1/members/{id}           |               회원 상세 조회                |
 
@@ -166,9 +166,9 @@ docker compose up -d
 
 - 사용자
 
-| <div style="width:200px"> Method | <div style="width:300px">           URI | <div style="width:290px"> Description |
+| <div style="width:200px"> **Method** | <div style="width:300px">           **URI** | <div style="width:290px"> **Description** |
 |:--------------------------------:|:---------------------------------------:|:-------------------------------------:|
-|               POST               |          /api/v1/members/auth           |                  로그인                  |
+|               POST               |          /auth           |                  로그인                  |
 |               POST               |             /api/v1/members             |                 회원가입                  |
 |               POST               |  /api/v1/members/{id}/change-password   |                비밀번호 변경                |
 |               PUT                |          /api/v1/members/{id}           |                회원정보 변경                |
